@@ -1,22 +1,19 @@
-<script setup lang="ts">
+<script setup>
+import { Navigation } from "@/widgets/navigation";
 </script>
 
 <template>
   <v-app>
-    <v-app-bar
-      color="primary"
-      flat
-    >
-      <v-icon
-        icon="mdi-gift-outline"
-        class="ml-4"
-      />
-      <v-app-bar-title
-        class="text-h5"
+    <Navigation />
+
+    <v-main>
+      <v-container
+        class="pa-6"
+        max-width="1200"
       >
-        Дневник подарков
-      </v-app-bar-title>
-    </v-app-bar>
+        <router-view />
+      </v-container>
+    </v-main>
   </v-app>
 </template>
 
