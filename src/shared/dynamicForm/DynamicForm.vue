@@ -43,7 +43,6 @@ const validateField = (key: string) => {
 
 const onSubmit = async () => {
   const result = propsComponent.schema.safeParse(formData)
-  console.log('result', result, formData)
   if (!result.success) {
     errors.value = {}
     result.error.issues.forEach((err) => {
@@ -75,7 +74,7 @@ defineExpose({ reset })
     class="form"
     @submit.prevent="onSubmit"
   >
-    <div class="d-flex flex-column ga-4 justify-end ">
+    <div class="d-flex flex-column ga-4 justify-end">
       <div
         v-for="field in fields"
         :key="field.key"
@@ -179,7 +178,7 @@ defineExpose({ reset })
             <v-list-item v-bind="props">
               <template #prepend>
                 <v-icon
-                  :icon="item.value"
+                  :icon="item.value as string"
                   class="mr-3"
                 />
               </template>
@@ -189,7 +188,7 @@ defineExpose({ reset })
           <template #selection="{ item }">
             <div class="d-flex align-center">
               <v-icon
-                :icon="item.value"
+                :icon="item.value as string"
                 class="mr-2"
               />
               <span>{{ item.title }}</span>
