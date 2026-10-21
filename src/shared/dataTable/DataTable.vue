@@ -1,6 +1,6 @@
 <script generic="T extends Record<string, any>" lang="ts" setup>
 import type { TableColumn } from './types'
-import { computed } from 'vue'
+import { computed, useSlots } from 'vue'
 
 const props = defineProps<{
   items: T[]
@@ -17,6 +17,8 @@ const vuetifyHeaders = computed(() => {
     width: col.width,
   }))
 })
+
+const slots = useSlots()
 </script>
 
 <template>
@@ -24,7 +26,7 @@ const vuetifyHeaders = computed(() => {
     :headers="vuetifyHeaders"
     :items="items"
     :loading="loading"
-    class="elevation-0 rounded-xl border"
+    class="elevation-0 rounded-lg border"
     hover
   >
     <template
@@ -32,9 +34,16 @@ const vuetifyHeaders = computed(() => {
       :key="col.key"
       #[`item.${col.key}`]="{ item }"
     >
+      <slot
+        v-if="slots[`cell-${col.key}`]"
+        :item="item"
+        :name="`cell-${col.key}`"
+        :value="item[col.key]"
+      />
+
       <component
         :is="col.component"
-        v-if="col.component"
+        v-else-if="col.component"
         v-bind="{ ...col.componentProps, item: item }"
       />
 

@@ -9,7 +9,6 @@ defineProps<{
 
 const emit = defineEmits<{
   (e: 'update:modelValue', value: boolean): void
-  (e: 'submit', data: PeopleAddFormData): void
 }>()
 
 const store = usePeopleStore()
@@ -19,7 +18,6 @@ const close = () => emit('update:modelValue', false)
 const onSubmit = (data: PeopleAddFormData) => {
   store.addPeople(data)
 
-  emit('submit', data)
   close()
 }
 </script>

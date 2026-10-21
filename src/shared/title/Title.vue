@@ -25,7 +25,7 @@ withDefaults(
 
 <style scoped>
 .title-h1 {
-  width: stretch;
+  width: auto;
   font-size: clamp(1.75rem, 4vw, 2.25rem);
   font-family: inherit;
   font-weight: 800;
