@@ -4,7 +4,7 @@ import type { z } from 'zod'
 import { FieldFormType, type FormFieldConfig } from './types'
 import { Text } from "@/shared";
 
-const props = defineProps<{
+const propsComponent = defineProps<{
   schema: z.ZodType<T>
   fields: FormFieldConfig[]
   initialValues?: Partial<T>
@@ -20,8 +20,8 @@ const formRef = ref()
 const formData = reactive<Record<string, unknown>>({})
 const errors = ref<Record<string, string>>({})
 
-props.fields.forEach((field) => {
-  formData[field.key] = props.initialValues?.[field.key as keyof T] ?? getDefaultValue(field.type)
+propsComponent.fields.forEach((field) => {
+  formData[field.key] = propsComponent.initialValues?.[field.key as keyof T] ?? getDefaultValue(field.type)
 })
 
 function getDefaultValue(type: string) {
@@ -31,7 +31,7 @@ function getDefaultValue(type: string) {
 }
 
 const validateField = (key: string) => {
-  const result = props.schema.safeParse(formData)
+  const result = propsComponent.schema.safeParse(formData)
 
   if (!result.success) {
     const fieldError = result.error.issues.find(err => err.path[0] === key)
@@ -42,7 +42,7 @@ const validateField = (key: string) => {
 }
 
 const onSubmit = async () => {
-  const result = props.schema.safeParse(formData)
+  const result = propsComponent.schema.safeParse(formData)
   console.log('result', result, formData)
   if (!result.success) {
     errors.value = {}
@@ -57,8 +57,8 @@ const onSubmit = async () => {
 }
 
 const reset = () => {
-  props.fields.forEach((field) => {
-    formData[field.key] = props.initialValues?.[field.key as keyof T] ?? getDefaultValue(field.type)
+  propsComponent.fields.forEach((field) => {
+    formData[field.key] = propsComponent.initialValues?.[field.key as keyof T] ?? getDefaultValue(field.type)
   })
   errors.value = {}
 }
@@ -103,8 +103,7 @@ defineExpose({ reset })
             <template #activator="{ props }">
               <div
                 :style="{
-                  background: formData[field.key] || '#cccccc'
-                }"
+                  background: (formData[field.key] as string) || '#cccccc', }"
                 class="color-picker"
                 v-bind="props"
               />

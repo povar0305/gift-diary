@@ -7,5 +7,5 @@ export interface TableColumn<T = never> {
   align?: 'start' | 'center' | 'end'
   component?: Component
   componentProps?: Record<string, never>
-  formatter?: (value: never, item: T) => string
+  formatter?: (value: T, item: T) => string
 }
