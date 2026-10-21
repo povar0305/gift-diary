@@ -1,5 +1,6 @@
 <script setup>
 import { Navigation } from "@/widgets/navigation";
+import { AppSnackbar } from "@/shared";
 </script>
 
 <template>
@@ -14,6 +15,8 @@ import { Navigation } from "@/widgets/navigation";
         <router-view />
       </v-container>
     </v-main>
+
+    <AppSnackbar />
   </v-app>
 </template>
 
