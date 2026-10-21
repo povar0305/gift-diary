@@ -1,42 +1,78 @@
-# gift-diary
+# 🎁 Gift Diary (Дневник подарков)
 
-This template should help get you started developing with Vue 3 in Vite.
+## О проекте
 
-## Recommended IDE Setup
+Я люблю все систематизировать и держать под контролем. Для меня это важно не только в рабочих задачах и коде, но и в
+повседневной жизни. Каждый раз перед большими праздниками я сталкивалась с одной и той же проблемой: очень много
+подарков, нужно ничего не забыть и никого не перепутать.
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+Чтобы получатели раньше времени не знали, что внутри, я решила подписывать подарки с помощью иконок.
 
-## Recommended Browser Setup
+История эволюции моего подхода к подаркам:
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
+1. **Обычный лист А4** — варианты и списки писались от руки.
+2. **Таблица Excel** — более структурированный подход.
+3. **Gift Diary** — текущий проект, который автоматизирует весь процесс.
 
-## Type Support for `.vue` Imports in TS
+**Суть проекта** — помогать с подарками на большие праздники. Это приложение, которое позволяет регистрировать людей,
+прикреплять к ним подарки и отслеживать их на разных стадиях готовности.
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+## 🚀 Функционал
 
-## Customize configuration
+### 1. Люди
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+Вы регистрируете человека и даете ему:
 
-## Project Setup
+* Имя
+* Родственную связь (родственник, друг, коллега)
+* Цвет и иконку (для визуального различения и тайной подписи подарков)
 
-```sh
-npm install
-```
+### 2. Таблица подарков
 
-### Compile and Hot-Reload for Development
+Вы составляете таблицу, где к каждому человеку прикрепляете конкретный подарок.
 
-```sh
-npm run dev
-```
+### 3. Статусы готовности
 
-### Type-Check, Compile and Minify for Production
+Ключевая фича — отслеживание стадии готовности каждого подарка. Статусы помогают держать все под контролем:
 
-```sh
-npm run build
-```
+* 💡 **Придумать**
+* 🛒 **Заказать**
+* 📦 **Заказан**
+* 🚚 **В пути**
+* 🏃 **Забрать** (пришел в ПВЗ)
+* 🏠 **Дома**
+* 🎀 **Упакован**
+
+## 🛠 Стек технологий
+
+Проект написан с использованием современных инструментов и лучших практик:
+
+### ⚙️ Ядро приложения:
+
+* **Vue 3** — прогрессивный фреймворк для создания пользовательских интерфейсов.
+* **TypeScript** — строгая типизация для надежности кода.
+* **Vite** — сверхбыстрый сборщик и сервер разработки.
+
+### 🎨 UI и стилизация:
+
+* **Vuetify 3** — библиотека компонентов в стиле Material Design.
+* **MDI Font** (`@mdi/font`) — шрифт с иконками Material Design.
+
+### 🗄️ Данные и состояние:
+
+* **Pinia** — официальный стейт-менеджер для Vue 3.
+* **Firebase** — облачная NoSQL база данных Firestore для синхронизации между устройствами.
+* **Zod** — библиотека для декларативной валидации схем и типов.
+
+### 🧭 Архитектура и навигация:
+
+* **Vue Router** — официальный роутер для навигации между страницами.
+* **Feature-Sliced Design (FSD)** — методология архитектуры проекта (слои `app`, `pages`, `widgets`, `features`,
+  `entities`, `shared`).
+
+### ✅ Качество кода и тестирование:
+
+* **ESLint** — линтер для поиска и исправления проблем в коде.
+* **eslint-plugin-vue** и **typescript-eslint** — правила для Vue и TypeScript.
+* **eslint-plugin-vuejs-accessibility** — проверка доступности (a11y).
+* **vue-tsc** — проверка типов в `.vue` файлах.
