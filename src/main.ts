@@ -7,9 +7,9 @@ import './assets/styles/main.css'
 
 import vuetify from './plugins/vuetify'
 import router from './router'
-const app = createApp(App)
-
 import { createPinia } from 'pinia'
+
+const app = createApp(App)
 
 
 app.use(createPinia())
