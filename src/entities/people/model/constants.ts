@@ -1,4 +1,5 @@
 import { RelationPeople } from "./types";
+import { z } from "zod";
 
 export const RelationPeopleLabels: Record<RelationPeople, string> = {
   [RelationPeople.Family]: 'Родственник',
@@ -12,6 +13,7 @@ export const RelationPeopleItems = Object.entries(RelationPeopleLabels).map(
     value,
   })
 )
+
 export const PackagingIconItems = [
   { title: 'Круг', value: 'mdi-circle-outline' },
   { title: 'Треугольник', value: 'mdi-triangle-outline' },
@@ -50,3 +52,6 @@ export const PackagingIconItems = [
   { title: 'Евро', value: 'material-symbols:euro-rounded' },
   { title: 'Воздушный змей', value: 'material-symbols:family-link-outline' },
 ]
+
+export const iconValues = PackagingIconItems.map((item) => item.value)
+export const PackagingIconSchema = z.enum(iconValues as [string, ...string[]], 'Выберите иконку из предложенного списка')

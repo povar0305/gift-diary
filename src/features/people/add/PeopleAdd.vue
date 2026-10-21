@@ -17,7 +17,7 @@ const store = usePeopleStore()
 const close = () => emit('update:modelValue', false)
 
 const onSubmit = (data: PeopleAddFormData) => {
-  store.addPerson(data)
+  store.addPeople(data)
 
   emit('submit', data)
   close()
