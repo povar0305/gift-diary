@@ -3,6 +3,7 @@ export enum FieldFormType {
   Textarea = 'textarea',
   Select = 'select',
   Color = 'color',
+  Icon = 'icon',
   Checkbox = 'checkbox',
   Number = 'number',
   Date = 'date',

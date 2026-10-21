@@ -1,6 +1,6 @@
 import { FieldFormType, type FormFieldConfig } from "@/shared";
 import { z } from 'zod'
-import { type HexColor, type People, RelationPeople, RelationPeopleItems } from "@/entities/people";
+import { type HexColor, PackagingIconItems, type People, RelationPeople, RelationPeopleItems } from "@/entities/people";
 
 export const FieldsPeopleAdd: FormFieldConfig[] = [
   {
@@ -20,6 +20,13 @@ export const FieldsPeopleAdd: FormFieldConfig[] = [
     key: 'color',
     label: 'Цвет лейбла',
     type: FieldFormType.Color
+  },
+  {
+    key: 'icon',
+    label: 'Иконка упаковки',
+    items: PackagingIconItems,
+    type: FieldFormType.Icon,
+    required: true
   },
 ]
 

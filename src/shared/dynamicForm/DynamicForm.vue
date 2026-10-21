@@ -151,7 +151,7 @@ defineExpose({ reset })
         />
 
         <v-select
-          v-else-if="field.type === 'select'"
+          v-else-if="field.type === FieldFormType.Select"
           v-model="formData[field.key]"
           :error-messages="errors[field.key]"
           :hide-details="!errors[field.key]"
@@ -161,6 +161,41 @@ defineExpose({ reset })
           variant="outlined"
           @update:model-value="validateField(field.key)"
         />
+
+        <v-autocomplete
+          v-else-if="field.type === FieldFormType.Icon"
+          v-model="formData[field.key]"
+          :error-messages="errors[field.key]"
+          :hide-details="!errors[field.key]"
+          :items="field.items"
+          autocomplete="iconGift"
+          density="comfortable"
+          hide-no-data
+          v-bind="field.props"
+          variant="outlined"
+          @update:model-value="validateField(field.key)"
+        >
+          <template #item="{ props, item }">
+            <v-list-item v-bind="props">
+              <template #prepend>
+                <v-icon
+                  :icon="item.value"
+                  class="mr-3"
+                />
+              </template>
+            </v-list-item>
+          </template>
+
+          <template #selection="{ item }">
+            <div class="d-flex align-center">
+              <v-icon
+                :icon="item.value"
+                class="mr-2"
+              />
+              <span>{{ item.title }}</span>
+            </div>
+          </template>
+        </v-autocomplete>
 
         <v-checkbox
           v-else-if="field.type === 'checkbox'"
