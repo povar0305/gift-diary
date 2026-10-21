@@ -1,6 +1,13 @@
 import { FieldFormType, type FormFieldConfig } from "@/shared";
 import { z } from 'zod'
-import { type HexColor, type People, RelationPeople, RelationPeopleItems } from "@/entities/people";
+import {
+  type HexColor,
+  PackagingIconItems,
+  PackagingIconSchema,
+  type People,
+  RelationPeople,
+  RelationPeopleItems
+} from "@/entities/people";
 
 export const FieldsPeopleAdd: FormFieldConfig[] = [
   {
@@ -21,6 +28,13 @@ export const FieldsPeopleAdd: FormFieldConfig[] = [
     label: 'Цвет лейбла',
     type: FieldFormType.Color
   },
+  {
+    key: 'icon',
+    label: 'Иконка упаковки',
+    items: PackagingIconItems,
+    type: FieldFormType.Icon,
+    required: true
+  },
 ]
 
 export const HexColorSchema = z
@@ -31,6 +45,7 @@ export const HexColorSchema = z
 
 export const PeopleAddSchema = z.object({
   color: HexColorSchema,
+  icon: PackagingIconSchema,
   name: z
     .string()
     .min(2, 'Имя должно быть не менее 2 символов')

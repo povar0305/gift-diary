@@ -43,7 +43,6 @@ const validateField = (key: string) => {
 
 const onSubmit = async () => {
   const result = propsComponent.schema.safeParse(formData)
-  console.log('result', result, formData)
   if (!result.success) {
     errors.value = {}
     result.error.issues.forEach((err) => {
@@ -75,7 +74,7 @@ defineExpose({ reset })
     class="form"
     @submit.prevent="onSubmit"
   >
-    <div class="d-flex flex-column ga-4 justify-end ">
+    <div class="d-flex flex-column ga-4 justify-end">
       <div
         v-for="field in fields"
         :key="field.key"
@@ -151,7 +150,7 @@ defineExpose({ reset })
         />
 
         <v-select
-          v-else-if="field.type === 'select'"
+          v-else-if="field.type === FieldFormType.Select"
           v-model="formData[field.key]"
           :error-messages="errors[field.key]"
           :hide-details="!errors[field.key]"
@@ -161,6 +160,41 @@ defineExpose({ reset })
           variant="outlined"
           @update:model-value="validateField(field.key)"
         />
+
+        <v-autocomplete
+          v-else-if="field.type === FieldFormType.Icon"
+          v-model="formData[field.key]"
+          :error-messages="errors[field.key]"
+          :hide-details="!errors[field.key]"
+          :items="field.items"
+          autocomplete="iconGift"
+          density="comfortable"
+          hide-no-data
+          v-bind="field.props"
+          variant="outlined"
+          @update:model-value="validateField(field.key)"
+        >
+          <template #item="{ props, item }">
+            <v-list-item v-bind="props">
+              <template #prepend>
+                <v-icon
+                  :icon="item.value as string"
+                  class="mr-3"
+                />
+              </template>
+            </v-list-item>
+          </template>
+
+          <template #selection="{ item }">
+            <div class="d-flex align-center">
+              <v-icon
+                :icon="item.value as string"
+                class="mr-2"
+              />
+              <span>{{ item.title }}</span>
+            </div>
+          </template>
+        </v-autocomplete>
 
         <v-checkbox
           v-else-if="field.type === 'checkbox'"

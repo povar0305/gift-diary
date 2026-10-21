@@ -3,6 +3,7 @@ export interface People {
   name: string
   relation: RelationPeople
   color: HexColor
+  icon?: string
 }
 
 export enum RelationPeople {
