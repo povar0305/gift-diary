@@ -8,4 +8,5 @@ export interface TableColumn<T = never> {
   component?: Component
   componentProps?: Record<string, never>
   formatter?: (value: T, item: T) => string
+  sortable?: boolean
 }
