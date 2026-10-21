@@ -1,12 +1,12 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { type Ref, ref } from 'vue'
 import { type People } from "./types";
 import { addDoc, collection, deleteDoc, doc, onSnapshot, query } from 'firebase/firestore'
 import { db } from '@/app/firebase'
 import { useNotificationStore } from "@/shared/appSnackbar";
 
 export const usePeopleStore = defineStore('people', () => {
-  const people = ref<People[]>([])
+  const people: Ref<People[]> = ref<People[]>([])
   const isLoading = ref(false)
 
   const notify = useNotificationStore()
