@@ -1,7 +1,6 @@
-import {createRouter, createWebHistory} from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 
 import PeoplePage from "@/pages/people/PeoplePage.vue";
-import PeopleAddPage from "@/pages/people/add/PeopleAddPage.vue";
 
 
 const routes = [
@@ -18,16 +17,7 @@ const routes = [
       icon: 'mdi-account-group-outline',
       showInNav: true,
     },
-  },
-  {
-    path: '/people/add',
-    name: 'people.add',
-    component: PeopleAddPage,
-    meta: {
-      title: 'Люди',
-      icon: 'mdi-account-group-outline',
-    },
-  },
+  }
 ]
 
 const router = createRouter({
@@ -36,4 +26,4 @@ const router = createRouter({
 })
 
 export default router
-export {routes}
+export { routes }

@@ -26,7 +26,7 @@ const goBack = () => {
         variant="plain"
         @click="goBack"
       />
-      <nav class="d-flex gap-2">
+      <nav class="d-flex ga-2">
         <v-btn
           v-for="item in navigationItems"
           :key="item.name"

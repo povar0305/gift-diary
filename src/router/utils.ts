@@ -1,6 +1,6 @@
-import type {RouteRecordRaw} from 'vue-router'
-import {routes} from './index'
-import type {NavigationItem} from './types'
+import type { RouteRecordRaw } from 'vue-router'
+import { routes } from './index'
+import type { NavigationItem } from './types'
 
 /**
  * Собирает элементы навигации из роутов.
