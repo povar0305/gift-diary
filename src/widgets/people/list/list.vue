@@ -42,7 +42,7 @@ const columnsPeople = PEOPLE_KEYS_TABLE.map((key): TableColumn => ({
     <DataTable
       :columns="columnsPeople"
       :custom-filter="customFilterPeopleList"
-      :items="people as People[]"
+      :items="people as any"
       :loading="isLoading"
       :search="search"
     >
