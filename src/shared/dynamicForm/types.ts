@@ -16,5 +16,6 @@ export type FormFieldConfig = {
   items?: { title: string; value: unknown }[]
   placeholder?: string
   props?: Record<string, unknown>
-  required?: boolean
+  required?: boolean,
+  condition?: (formData: Record<string, unknown>) => boolean
 }
