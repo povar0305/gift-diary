@@ -1,0 +1,1 @@
+export { default as GiftList } from './list.vue'
