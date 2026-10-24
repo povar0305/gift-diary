@@ -57,5 +57,5 @@ export const getFieldsGiftCreate = (people: People[]): FormFieldConfig[] => {
 
 
 export const GitsCreateInitialValues = {
-  status: GiftStatus.ToThink
+  status: GiftStatus.Idea
 }
