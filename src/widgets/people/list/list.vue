@@ -17,7 +17,7 @@ const isAddDialogOpen = ref(false)
 const search = ref(null)
 
 const peopleStore = usePeopleStore()
-const { people, isLoading } = storeToRefs(peopleStore)
+const { people, isLoadingPeople } = storeToRefs(peopleStore)
 
 onMounted(() => {
   peopleStore.getPeopleList()
@@ -43,7 +43,7 @@ const columnsPeople = PEOPLE_KEYS_TABLE.map((key): TableColumn => ({
       :columns="columnsPeople"
       :custom-filter="customFilterPeopleList"
       :items="people as any"
-      :loading="isLoading"
+      :loading="isLoadingPeople"
       :search="search"
     >
       <template #header>
@@ -75,27 +75,27 @@ const columnsPeople = PEOPLE_KEYS_TABLE.map((key): TableColumn => ({
       </template>
 
 
-      <template #cell-relation="{ item }: { item: People }">
-        {{ RelationPeopleLabels[item.relation] }}
+      <template #cell-relation="{ item }">
+        {{ RelationPeopleLabels[(item as unknown as People).relation] }}
       </template>
 
-      <template #cell-icon="{ item }: { item: People }">
-        <v-icon :icon="item.icon" />
+      <template #cell-icon="{ item }">
+        <v-icon :icon="(item as unknown as People).icon" />
       </template>
 
-      <template #cell-color="{ item }: { item: People }">
+      <template #cell-color="{ item }">
         <div
-          :style="{background: item.color }"
+          :style="{background: (item as unknown as People)?.color }"
           class="color-picker"
         />
       </template>
 
-      <template #cell-actions="{ item }: { item: People }">
+      <template #cell-actions="{ item }">
         <v-btn
           color="error"
           icon="mdi-trash-can-outline"
           variant="text"
-          @click="() => {peopleStore.removePeople(item.id)}"
+          @click="() => {peopleStore.removePeople((item as unknown as People).id)}"
         />
       </template>
 

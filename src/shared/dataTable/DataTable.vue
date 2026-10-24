@@ -1,12 +1,12 @@
 <script generic="T extends Record<string, unknown>" lang="ts" setup>
 import type { TableColumn } from './types'
 import { computed, useSlots } from 'vue'
-import { Text } from "@/shared";
-import type { FilterFunction } from "vuetify/framework";
+import { Text } from '@/shared'
+import type { FilterFunction } from 'vuetify/framework'
 
 const props = defineProps<{
   items: T[]
-  columns: TableColumn<T>[]
+  columns: TableColumn[]
   loading?: boolean
   search?: string | null
   customFilter?: FilterFunction
@@ -24,11 +24,6 @@ const vuetifyHeaders = computed(() => {
 
 const slots = useSlots()
 
-defineSlots<{
-  [key: `cell-${string}`]: (props: { item: T; value: unknown }) => unknown
-  'header': () => unknown
-  'no-data': () => unknown
-}>()
 </script>
 
 <template>
@@ -47,11 +42,11 @@ defineSlots<{
       <template
         v-for="col in columns"
         :key="col.key"
-        #[`item.${col.key}`]="{ item }: { item: Record<string, any> }"
+        #[`item.${col.key}`]="{ item }"
       >
         <slot
           v-if="slots[`cell-${col.key}`]"
-          :item="item as unknown as T"
+          :item="item as T"
           :name="`cell-${col.key}`"
           :value="item[col.key]"
         />
@@ -59,20 +54,18 @@ defineSlots<{
         <component
           :is="col.component"
           v-else-if="col.component"
-          v-bind="{ ...col.componentProps, item: item }"
+          v-bind="{ ...col.componentProps, item: item as T }"
         />
 
         <span v-else>
-          {{ col.formatter ? col.formatter(item[col.key], item as unknown as T) : item[col.key] }}
+          {{ col.formatter ? col.formatter(item[col.key]) : item[col.key] }}
         </span>
       </template>
 
       <template #no-data>
         <div class="no-data">
           <slot name="no-data">
-            <Text>
-              К сожалению, ничего не нашлось
-            </Text>
+            <Text>К сожалению, ничего не нашлось</Text>
           </slot>
         </div>
       </template>

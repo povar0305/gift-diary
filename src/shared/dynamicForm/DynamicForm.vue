@@ -1,5 +1,5 @@
 <script generic="T extends Record<string, unknown >" lang="ts" setup>
-import { reactive, ref } from 'vue'
+import { computed, reactive, ref } from 'vue'
 import type { z } from 'zod'
 import { FieldFormType, type FormFieldConfig } from './types'
 import { Text } from "@/shared";
@@ -64,8 +64,14 @@ const reset = () => {
 
 const colorMenuOpen = ref(false)
 
-
 defineExpose({ reset })
+
+const visibleFields = computed(() => {
+  return propsComponent.fields.filter(field => {
+    if (!field.condition) return true
+    return field.condition(formData)
+  })
+})
 </script>
 
 <template>
@@ -76,7 +82,7 @@ defineExpose({ reset })
   >
     <div class="d-flex flex-column ga-4 justify-end">
       <div
-        v-for="field in fields"
+        v-for="field in visibleFields"
         :key="field.key"
       >
         <Text
@@ -219,6 +225,7 @@ defineExpose({ reset })
     </div>
   </v-form>
 </template>
+
 <style scoped>
 .form {
   display: flex;

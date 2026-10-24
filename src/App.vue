@@ -1,6 +1,11 @@
 <script setup>
 import { Navigation } from "@/widgets/navigation";
 import { AppSnackbar } from "@/shared";
+
+import dayjs from 'dayjs'
+import 'dayjs/locale/ru'
+
+dayjs.locale('ru')
 </script>
 
 <template>
