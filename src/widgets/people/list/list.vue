@@ -83,13 +83,6 @@ const columnsPeople = PEOPLE_KEYS_TABLE.map((key): TableColumn => ({
         <v-icon :icon="(item as unknown as People).icon" />
       </template>
 
-      <template #cell-color="{ item }">
-        <div
-          :style="{background: (item as unknown as People)?.color }"
-          class="color-picker"
-        />
-      </template>
-
       <template #cell-actions="{ item }">
         <v-btn
           color="error"
