@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, onMounted, onUnmounted, ref } from "vue";
+import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import { type Gift, GiftStatus, GiftStatusItems, useGiftStore } from "@/entities/gift";
 import { type People, usePeopleStore } from "@/entities/people";
 import { storeToRefs } from "pinia";
@@ -19,11 +19,22 @@ const { gifts, isLoadingGifts } = storeToRefs(giftsStore)
 const peopleStore = usePeopleStore()
 const { people, isLoadingPeople } = storeToRefs(peopleStore)
 
+const updateGiftsList = () => {
+  if (isShowedGiven.value) {
+    giftsStore.getGiftsList([
+      where('status', '==', GiftStatus.Given),
+      orderBy('datePickup', 'desc')
+    ])
+  } else {
+    giftsStore.getGiftsList([
+      where('status', '!=', GiftStatus.Given),
+      orderBy('datePickup', 'asc')
+    ])
+  }
+}
+
 onMounted(() => {
-  giftsStore.getGiftsList([
-    where('status', '!=', GiftStatus.Given),
-    orderBy('datePickup', 'asc')
-  ])
+  updateGiftsList()
   peopleStore.getPeopleList()
 })
 
@@ -32,6 +43,11 @@ onUnmounted(() => {
   peopleStore.stopGetPeopleList()
 })
 
+const isShowedGiven = ref(false)
+
+watch(isShowedGiven, () => {
+  updateGiftsList()
+})
 const search = ref(null)
 
 const totalPrice = computed(() => gifts.value.reduce((total, item) => total + (item['price'] as number), 0))
@@ -102,16 +118,27 @@ const formatGiftDate = (date?: string) => {
             />
           </div>
 
-          <v-text-field
-            v-model="search"
-            clearable
-            density="compact"
-            hide-details
-            label="Поиск по любому параметру"
-            prepend-inner-icon="mdi-magnify"
-            style="max-width: 300px;"
-            variant="outlined"
-          />
+          <div class="d-flex ga-4 align-center">
+            <v-text-field
+              v-model="search"
+              clearable
+              density="compact"
+              hide-details
+              label="Поиск по любому параметру"
+              prepend-inner-icon="mdi-magnify"
+              style="width: 300px;"
+              variant="outlined"
+            />
+
+            <v-switch
+              v-model="isShowedGiven"
+              density="compact"
+              hide-details
+              inset
+              label="Врученые"
+              size="x-small"
+            />
+          </div>
         </div>
       </template>
 
@@ -154,13 +181,23 @@ const formatGiftDate = (date?: string) => {
       </template>
 
       <template #cell-status="{ item }">
-        <StatusChipSelect
-          :items="GiftStatusItems"
-          :model-value="(item as Gift).status"
-          @update:model-value="(newStatus) => {
-            giftsStore.updateGift((item as Gift).id, 'status', newStatus as GiftStatus)
-          }"
-        />
+        <div class="d-flex ga-4 align-center">
+          <StatusChipSelect
+            :items="GiftStatusItems"
+            :model-value="(item as Gift).status"
+            @update:model-value="(newStatus) => {
+              giftsStore.updateGift((item as Gift).id, 'status', newStatus as GiftStatus)
+            }"
+          />
+
+          <v-icon
+            v-if="[
+              GiftStatus.AtHome,
+              GiftStatus.Wrapped
+            ].includes((item as Gift).status)"
+            :icon="people.find((hero) => hero?.id === item?.personId)?.icon"
+          />
+        </div>
       </template>
 
       <template #no-data>
