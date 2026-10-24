@@ -7,26 +7,26 @@ import { useNotificationStore } from "@/shared/appSnackbar";
 
 export const usePeopleStore = defineStore('people', () => {
   const people: Ref<People[]> = ref<People[]>([])
-  const isLoading = ref(false)
+  const isLoadingPeople = ref(false)
 
   const notify = useNotificationStore()
 
   async function addPeople(newPerson: Omit<People, 'id'>) {
-    isLoading.value = true
+    isLoadingPeople.value = true
     try {
       await addDoc(collection(db, 'people'), newPerson)
       notify.success('Человек успешно добавлен!')
     } catch (error) {
       notify.error(`Не удалось добавить человека:${error}`)
     } finally {
-      isLoading.value = false
+      isLoadingPeople.value = false
     }
   }
 
   let unsubscribe: (() => void) | null = null
 
   function getPeopleList() {
-    isLoading.value = true
+    isLoadingPeople.value = true
     const q = query(collection(db, 'people'))
 
     unsubscribe = onSnapshot(q, (snapshot) => {
@@ -34,10 +34,10 @@ export const usePeopleStore = defineStore('people', () => {
         id: doc.id,
         ...doc.data(),
       })) as People[]
-      isLoading.value = false
+      isLoadingPeople.value = false
     }, (error) => {
       notify.error(`Ошибка при получении списка людей: ${error}`)
-      isLoading.value = false
+      isLoadingPeople.value = false
     })
   }
 
@@ -59,5 +59,5 @@ export const usePeopleStore = defineStore('people', () => {
     }
   }
 
-  return { people, isLoading, addPeople, getPeopleList, stopGetPeopleList, removePeople }
+  return { people, isLoadingPeople, addPeople, getPeopleList, stopGetPeopleList, removePeople }
 })
