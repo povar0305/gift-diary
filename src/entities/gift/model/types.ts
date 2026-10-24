@@ -2,15 +2,17 @@ import type { People } from "@/entities/people";
 import { z } from "zod";
 
 export enum GiftStatus {
-  ToThink = 'variant',
+  Idea = 'idea',
   Approved = 'approved',
-  ToOrder = 'to_order',
   Ordered = 'ordered',
   InTransit = 'in_transit',
   ToPickup = 'to_pickup',
   AtHome = 'at_home',
   Wrapped = 'wrapped',
+  Given = 'given',
 }
+
+export type ExternalUrl = `http://${string}` | `https://${string}`
 
 export type Gift = {
   id: string
@@ -18,8 +20,8 @@ export type Gift = {
   title: string
   status: GiftStatus
   price?: number
-  link?: string
-  datePickup?: Date
+  link?: ExternalUrl
+  datePickup?: string
 }
 
 
