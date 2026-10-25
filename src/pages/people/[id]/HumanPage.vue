@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { computed, onMounted, onUnmounted } from 'vue'
 import { usePeopleStore } from "@/entities/people";
 import { PeopleCard } from '@/widgets/people'
@@ -8,6 +8,13 @@ import { orderBy, where } from "firebase/firestore";
 
 const route = useRoute()
 
+const router = useRouter()
+
+const handlePeopleDeleted = () => {
+  setTimeout(() => {
+    router.push({ name: 'people' })
+  }, 500)
+}
 
 const personId = computed(() => route.params.id as string)
 
@@ -37,6 +44,7 @@ const assemblyFilters = () => [
       v-if="person"
       :person="person"
       variant="default"
+      @delete:people="handlePeopleDeleted()"
     />
 
     <GiftList :get-filters="assemblyFilters" />

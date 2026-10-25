@@ -1,10 +1,19 @@
 <script lang="ts" setup>
 import type { PeopleCardProps } from "./types";
-import { RelationPeopleLabels, usePeopleStore } from "@/entities/people";
+import { type People, RelationPeopleLabels, usePeopleStore } from "@/entities/people";
 
 const { person, variant = 'table' } = defineProps<PeopleCardProps>()
 
 const peopleStore = usePeopleStore()
+
+const emit = defineEmits<{
+  (e: 'delete:people'): void
+}>()
+
+const handleDeletePeople = (id: People['id']) => {
+  peopleStore.removePeople(id)
+  emit('delete:people')
+}
 </script>
 
 <template>
@@ -52,7 +61,7 @@ const peopleStore = usePeopleStore()
           density="compact"
           icon="mdi-trash-can-outline"
           variant="text"
-          @click.prevent.stop="() => {peopleStore.removePeople(person.id)}"
+          @click.prevent.stop="handleDeletePeople(person.id)"
         />
       </div>
     </v-card>
