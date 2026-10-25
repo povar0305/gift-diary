@@ -24,24 +24,25 @@ const peopleStore = usePeopleStore()
 const { people, isLoadingPeople } = storeToRefs(peopleStore)
 
 const getCurrentFilters = (): QueryConstraint[] => {
-  // 1. Если родитель передал свою функцию — используем её
-  if (props.getFilters) {
-    return props.getFilters()
-  }
+  const parentFilters = props.getFilters ? props.getFilters() : []
 
-  // 2. Иначе используем стандартную логику
+  let internalFilters: QueryConstraint[] = []
+
   if (isShowedGiven.value) {
-    return [
+    internalFilters = [
       where('status', '==', GiftStatus.Given),
       orderBy('datePickup', 'desc')
     ]
   } else {
-    return [
+    internalFilters = [
       where('status', '!=', GiftStatus.Given),
       orderBy('datePickup', 'asc')
     ]
   }
+
+  return [...parentFilters, ...internalFilters]
 }
+
 const updateGiftsList = () => {
   giftsStore.getGiftsList(getCurrentFilters())
 }
@@ -61,6 +62,7 @@ const isShowedGiven = ref(false)
 watch(isShowedGiven, () => {
   updateGiftsList()
 })
+
 const search = ref(null)
 
 const totalPrice = computed(() => gifts.value.reduce((total, item) => total + (item['price'] as number), 0))
