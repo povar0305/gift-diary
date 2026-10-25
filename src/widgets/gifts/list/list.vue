@@ -115,7 +115,7 @@ const formatGiftDate = (date?: string) => {
       :search="search"
     >
       <template #header>
-        <div class="d-flex justify-space-between align-center w-full">
+        <div class="d-flex justify-space-between align-sm-center w-full flex-sm-row flex-column ga-2 ga-sm-0">
           <div class="d-flex ga-2 align-center">
             <slot name="header">
               <Title>
@@ -136,7 +136,7 @@ const formatGiftDate = (date?: string) => {
             />
           </div>
 
-          <div class="d-flex ga-4 align-center">
+          <div class="d-flex ga-4 align-sm-center flex-sm-row flex-column">
             <v-text-field
               v-model="search"
               clearable
@@ -144,7 +144,7 @@ const formatGiftDate = (date?: string) => {
               hide-details
               label="Поиск по любому параметру"
               prepend-inner-icon="mdi-magnify"
-              style="width: 300px;"
+              style="max-width: 350px; min-width: 250px; width: 100%;"
               variant="outlined"
             />
 

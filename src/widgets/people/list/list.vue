@@ -34,8 +34,8 @@ onUnmounted(() => {
 
 <template>
   <div class="d-flex flex-column ga-4">
-    <div class="d-flex justify-space-between align-center w-full">
-      <div class="d-flex ga-2 align-center">
+    <div class="d-flex justify-space-between align-sm-center w-full flex-column flex-sm-row w-100 ga-2 ga-sm-0">
+      <div class="d-flex ga-2 align-center w-100">
         <Title>
           Люди
         </Title>
@@ -55,7 +55,7 @@ onUnmounted(() => {
         hide-details
         label="Поиск по любому параметру"
         prepend-inner-icon="mdi-magnify"
-        style="max-width: 300px;"
+        style="max-width: 350px; min-width: 250px; width: 100%;"
         variant="outlined"
       />
     </div>
