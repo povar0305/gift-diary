@@ -21,7 +21,7 @@ const lightTheme = {
     'on-primary': '#FFFFFF',
   },
   variables: {
-    'border-radius-root': '10px', // Мягкие, но не «пузырчатые» углы
+    'border-radius-root': '10px',
     'font-family-root': "'Manrope', sans-serif",
   },
 }

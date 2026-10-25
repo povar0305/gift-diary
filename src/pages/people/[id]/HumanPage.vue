@@ -7,20 +7,22 @@ import { GiftList } from "@/widgets/gifts";
 import { orderBy, where } from "firebase/firestore";
 
 const route = useRoute()
+const personId = computed(() => route.params.id as string)
 
 const router = useRouter()
 
+const peopleStore = usePeopleStore()
+const person = computed(() => {
+  return peopleStore.people.find(p => p.id === personId.value)
+})
 const handlePeopleDeleted = () => {
   router.push({ name: 'people' })
 }
 
-const personId = computed(() => route.params.id as string)
-
-const peopleStore = usePeopleStore()
-
-const person = computed(() => {
-  return peopleStore.people.find(p => p.id === personId.value)
-})
+const assemblyFilters = () => [
+  where('personId', '==', personId.value),
+  orderBy('status', 'asc')
+]
 
 onMounted(() => {
   peopleStore.getPeopleList()
@@ -29,11 +31,6 @@ onMounted(() => {
 onUnmounted(() => {
   peopleStore.stopGetPeopleList()
 })
-
-const assemblyFilters = () => [
-  where('personId', '==', personId.value),
-  orderBy('status', 'asc')
-]
 </script>
 
 <template>
