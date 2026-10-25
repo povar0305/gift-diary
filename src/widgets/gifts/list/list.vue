@@ -7,7 +7,11 @@ import { DataTable, StatusChipSelect, Text, Title } from "@/shared";
 import { columnsGifts, getMarketplaceFromUrl } from "./constants";
 import { GiftAdd } from "@/features/gift";
 import dayjs from 'dayjs'
-import { orderBy, where } from 'firebase/firestore'
+import { orderBy, type QueryConstraint, where } from 'firebase/firestore'
+import type { GiftsListProps } from "./types";
+
+
+const props = defineProps<GiftsListProps>()
 
 
 const isCreateDialogOpen = ref(false)
@@ -19,18 +23,27 @@ const { gifts, isLoadingGifts } = storeToRefs(giftsStore)
 const peopleStore = usePeopleStore()
 const { people, isLoadingPeople } = storeToRefs(peopleStore)
 
-const updateGiftsList = () => {
+const getCurrentFilters = (): QueryConstraint[] => {
+  // 1. Если родитель передал свою функцию — используем её
+  if (props.getFilters) {
+    return props.getFilters()
+  }
+
+  // 2. Иначе используем стандартную логику
   if (isShowedGiven.value) {
-    giftsStore.getGiftsList([
+    return [
       where('status', '==', GiftStatus.Given),
       orderBy('datePickup', 'desc')
-    ])
+    ]
   } else {
-    giftsStore.getGiftsList([
+    return [
       where('status', '!=', GiftStatus.Given),
       orderBy('datePickup', 'asc')
-    ])
+    ]
   }
+}
+const updateGiftsList = () => {
+  giftsStore.getGiftsList(getCurrentFilters())
 }
 
 onMounted(() => {
@@ -102,13 +115,16 @@ const formatGiftDate = (date?: string) => {
       <template #header>
         <div class="d-flex justify-space-between align-center w-full">
           <div class="d-flex ga-2 align-center">
-            <Title>
-              Подарки
-            </Title>
+            <slot name="header">
+              <Title>
+                Подарки
+              </Title>
 
-            <Text>
-              ({{ gifts.length }})
-            </Text>
+              <Text>
+                ({{ gifts.length }})
+              </Text>
+            </slot>
+
 
             <v-btn
               density="compact"

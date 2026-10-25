@@ -83,6 +83,15 @@ const columnsPeople = PEOPLE_KEYS_TABLE.map((key): TableColumn => ({
         <v-icon :icon="(item as unknown as People).icon" />
       </template>
 
+      <template #cell-name="{ item }">
+        <router-link
+          :to="{name: 'current.people', params: { id: (item as unknown as People).id } }"
+          class="text-link text-primary"
+        >
+          {{ item.name }}
+        </router-link>
+      </template>
+
       <template #cell-actions="{ item }">
         <v-btn
           color="error"
