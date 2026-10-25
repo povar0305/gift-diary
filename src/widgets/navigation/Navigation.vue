@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 
 import { useRoute, useRouter } from "vue-router";
-import { navigationItems } from "@/router/utils.ts";
+import { navigationItems } from "@/router/utils";
 
 const route = useRoute()
 const router = useRouter()
@@ -26,6 +26,7 @@ const goBack = () => {
         variant="plain"
         @click="goBack"
       />
+      
       <nav class="d-flex ga-2">
         <v-btn
           v-for="item in navigationItems"

@@ -11,7 +11,7 @@ export function buildNavigation(routeList: readonly RouteRecordRaw[]): Navigatio
   return routeList
     .filter((route) => route.meta?.showInNav && route.meta?.title && route.meta?.icon)
     .map((route) => ({
-      name: String(route.name),      // Vue Router гарантирует name (если задан)
+      name: String(route.name),
       title: route.meta!.title as string,
       icon: route.meta!.icon as string,
       to: route.path,

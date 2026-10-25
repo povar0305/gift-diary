@@ -13,9 +13,9 @@ withDefaults(
 <template>
   <h1
     :class="[
+      'title-h1 text-on-background',
       `text-${align}`,
     ]"
-    class="title-h1 text-on-background"
   >
     <slot>
       {{ text }}

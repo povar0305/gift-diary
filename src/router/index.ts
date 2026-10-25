@@ -4,7 +4,6 @@ import PeoplePage from "@/pages/people/PeoplePage.vue";
 import GiftsPage from "@/pages/gifts/GiftsPage.vue";
 import HumanPage from "@/pages/people/[id]/HumanPage.vue";
 
-
 const routes = [
   {
     path: '/',
