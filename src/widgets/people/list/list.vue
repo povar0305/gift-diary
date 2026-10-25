@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-
 import { PeopleAdd } from "@/features/people";
 import { computed, onMounted, onUnmounted, ref } from "vue";
 import { usePeopleStore } from "@/entities/people";
@@ -109,13 +108,3 @@ onUnmounted(() => {
     />
   </div>
 </template>
-
-<style>
-.color-picker {
-  width: 2rem;
-  height: 1rem;
-  cursor: pointer;
-  border-radius: 1rem;
-  margin-left: 0.5rem;
-}
-</style>

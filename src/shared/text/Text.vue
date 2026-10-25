@@ -14,7 +14,8 @@ withDefaults(
   <span
     :class="[
       'text text-on-background',
-      `text-${align}` ]"
+      `text-${align}`
+    ]"
   >
     <slot>
       {{ text }}

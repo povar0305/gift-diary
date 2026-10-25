@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 export enum FieldFormType {
   Text = 'text',
   Textarea = 'textarea',
@@ -18,4 +20,11 @@ export type FormFieldConfig = {
   props?: Record<string, unknown>
   required?: boolean,
   condition?: (formData: Record<string, unknown>) => boolean
+}
+
+export type DynamicFormProps<T> = {
+  schema: z.ZodType<T>
+  fields: FormFieldConfig[]
+  initialValues?: Partial<T>
+  submitLabel?: string
 }

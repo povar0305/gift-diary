@@ -10,63 +10,18 @@ import dayjs from 'dayjs'
 import { orderBy, type QueryConstraint, where } from 'firebase/firestore'
 import type { GiftsListProps } from "./types";
 
-
 const props = defineProps<GiftsListProps>()
-
 
 const isCreateDialogOpen = ref(false)
 
 const giftsStore = useGiftStore()
 const { gifts, isLoadingGifts } = storeToRefs(giftsStore)
-
-
-const peopleStore = usePeopleStore()
-const { people, isLoadingPeople } = storeToRefs(peopleStore)
-
-const getCurrentFilters = (): QueryConstraint[] => {
-  const parentFilters = props.getFilters ? props.getFilters() : []
-
-  let internalFilters: QueryConstraint[] = []
-
-  if (isShowedGiven.value) {
-    internalFilters = [
-      where('status', '==', GiftStatus.Given),
-      orderBy('datePickup', 'desc')
-    ]
-  } else {
-    internalFilters = [
-      where('status', '!=', GiftStatus.Given),
-      orderBy('datePickup', 'asc')
-    ]
-  }
-
-  return [...parentFilters, ...internalFilters]
+const formatGiftDate = (date?: string) => {
+  if (!date || date.length === 0) return ''
+  return dayjs(date).format('DD.MM.YYYY')
 }
 
-const updateGiftsList = () => {
-  giftsStore.getGiftsList(getCurrentFilters())
-}
-
-onMounted(() => {
-  updateGiftsList()
-  peopleStore.getPeopleList()
-})
-
-onUnmounted(() => {
-  giftsStore.stopFetchingGifts()
-  peopleStore.stopGetPeopleList()
-})
-
-const isShowedGiven = ref(false)
-
-watch(isShowedGiven, () => {
-  updateGiftsList()
-})
-
-const search = ref(null)
-
-const totalPrice = computed(() => gifts.value.reduce((total, item) => total + (item['price'] as number), 0))
-
+const giftFilter = computed(() => createGiftFilter(people.value))
 const createGiftFilter = (peopleList: People[]) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (value: string, search: string, item: any) => {
@@ -97,12 +52,50 @@ const createGiftFilter = (peopleList: People[]) => {
     return false
   }
 }
-const giftFilter = computed(() => createGiftFilter(people.value))
+const getCurrentFilters = (): QueryConstraint[] => {
+  const parentFilters = props.getFilters ? props.getFilters() : []
 
-const formatGiftDate = (date?: string) => {
-  if (!date || date.length === 0) return ''
-  return dayjs(date).format('DD.MM.YYYY')
+  let internalFilters: QueryConstraint[] = []
+
+  if (isShowedGiven.value) {
+    internalFilters = [
+      where('status', '==', GiftStatus.Given),
+      orderBy('datePickup', 'desc')
+    ]
+  } else {
+    internalFilters = [
+      where('status', '!=', GiftStatus.Given),
+      orderBy('datePickup', 'asc')
+    ]
+  }
+
+  return [...parentFilters, ...internalFilters]
 }
+const updateGiftsList = () => {
+  giftsStore.getGiftsList(getCurrentFilters())
+}
+const totalPrice = computed(() => gifts.value.reduce((total, item) => total + (item['price'] as number), 0))
+
+const peopleStore = usePeopleStore()
+const { people, isLoadingPeople } = storeToRefs(peopleStore)
+
+const search = ref(null)
+
+
+const isShowedGiven = ref(false)
+watch(isShowedGiven, () => {
+  updateGiftsList()
+})
+
+onMounted(() => {
+  updateGiftsList()
+  peopleStore.getPeopleList()
+})
+
+onUnmounted(() => {
+  giftsStore.stopFetchingGifts()
+  peopleStore.stopGetPeopleList()
+})
 </script>
 
 <template>

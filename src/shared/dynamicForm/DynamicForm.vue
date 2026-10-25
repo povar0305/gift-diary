@@ -1,28 +1,19 @@
 <script generic="T extends Record<string, unknown >" lang="ts" setup>
 import { computed, reactive, ref } from 'vue'
-import type { z } from 'zod'
-import { FieldFormType, type FormFieldConfig } from './types'
+import { type DynamicFormProps, FieldFormType } from './types'
 import { Text } from "@/shared";
 
-const propsComponent = defineProps<{
-  schema: z.ZodType<T>
-  fields: FormFieldConfig[]
-  initialValues?: Partial<T>
-  submitLabel?: string
-}>()
+const propsComponent = defineProps<DynamicFormProps<T>>()
+propsComponent.fields.forEach((field) => {
+  formData[field.key] = propsComponent.initialValues?.[field.key as keyof T] ?? getDefaultValue(field.type)
+})
 
 const emit = defineEmits<{
   (e: 'submit', data: T): void
 }>()
 
 const formRef = ref()
-
 const formData = reactive<Record<string, unknown>>({})
-const errors = ref<Record<string, string>>({})
-
-propsComponent.fields.forEach((field) => {
-  formData[field.key] = propsComponent.initialValues?.[field.key as keyof T] ?? getDefaultValue(field.type)
-})
 
 function getDefaultValue(type: string) {
   if (type === 'checkbox') return false
@@ -30,16 +21,7 @@ function getDefaultValue(type: string) {
   return ''
 }
 
-const validateField = (key: string) => {
-  const result = propsComponent.schema.safeParse(formData)
-
-  if (!result.success) {
-    const fieldError = result.error.issues.find(err => err.path[0] === key)
-    errors.value[key] = fieldError ? fieldError.message : ''
-  } else {
-    errors.value[key] = ''
-  }
-}
+const errors = ref<Record<string, string>>({})
 
 const onSubmit = async () => {
   const result = propsComponent.schema.safeParse(formData)
@@ -54,24 +36,34 @@ const onSubmit = async () => {
 
   emit('submit', result.data)
 }
+const validateField = (key: string) => {
+  const result = propsComponent.schema.safeParse(formData)
 
-const reset = () => {
-  propsComponent.fields.forEach((field) => {
-    formData[field.key] = propsComponent.initialValues?.[field.key as keyof T] ?? getDefaultValue(field.type)
-  })
-  errors.value = {}
+  if (!result.success) {
+    const fieldError = result.error.issues.find(err => err.path[0] === key)
+    errors.value[key] = fieldError ? fieldError.message : ''
+  } else {
+    errors.value[key] = ''
+  }
 }
-
-const colorMenuOpen = ref(false)
-
-defineExpose({ reset })
-
 const visibleFields = computed(() => {
   return propsComponent.fields.filter(field => {
     if (!field.condition) return true
     return field.condition(formData)
   })
 })
+
+const reset = () => {
+  propsComponent.fields.forEach((field) => {
+    formData[field.key] = propsComponent.initialValues?.[field.key as keyof T] ?? getDefaultValue(field.type)
+  })
+  errors.value = {}
+
+}
+
+const colorMenuOpen = ref(false)
+
+defineExpose({ reset })
 </script>
 
 <template>

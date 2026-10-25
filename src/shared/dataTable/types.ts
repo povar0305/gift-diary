@@ -1,4 +1,5 @@
 import type { Component } from 'vue'
+import type { FilterFunction } from "vuetify/framework";
 
 export type TableColumn = {
   key: string
@@ -9,4 +10,12 @@ export type TableColumn = {
   componentProps?: Record<string, unknown>
   formatter?: (value: unknown) => string
   sortable?: boolean
+}
+
+export type DataTableProps<T> = {
+  items: T[]
+  columns: TableColumn[]
+  loading?: boolean
+  search?: string | null
+  customFilter?: FilterFunction
 }

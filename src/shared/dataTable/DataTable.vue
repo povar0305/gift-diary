@@ -1,16 +1,9 @@
 <script generic="T extends Record<string, unknown>" lang="ts" setup>
-import type { TableColumn } from './types'
 import { computed, useSlots } from 'vue'
 import { Text } from '@/shared'
-import type { FilterFunction } from 'vuetify/framework'
+import { type DataTableProps } from './types'
 
-const props = defineProps<{
-  items: T[]
-  columns: TableColumn[]
-  loading?: boolean
-  search?: string | null
-  customFilter?: FilterFunction
-}>()
+const props = defineProps<DataTableProps<T>>()
 
 const vuetifyHeaders = computed(() => {
   return props.columns.map((col) => ({
@@ -23,7 +16,6 @@ const vuetifyHeaders = computed(() => {
 })
 
 const slots = useSlots()
-
 </script>
 
 <template>
