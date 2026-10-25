@@ -10,7 +10,10 @@
     "build-only": "vite build",
     "type-check": "vue-tsc --build",
     "lint": "eslint . --ext .js,.vue",
-    "lint:fix": "eslint . --ext .js,.vue --fix"
+    "lint:fix": "eslint . --ext .js,.vue --fix",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@mdi/font": "^7.4.47",
@@ -25,20 +28,25 @@
     "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@pinia/testing": "^2.0.2",
+    "@testing-library/jest-dom": "^7.0.1",
     "@tsconfig/node24": "^24.0.5",
     "@types/node": "^24.13.4",
     "@vitejs/plugin-vue": "^6.0.8",
+    "@vue/test-utils": "^2.5.1",
     "@vue/tsconfig": "^0.9.1",
     "eslint": "^10.13.0",
     "eslint-plugin-vue": "^10.11.1",
     "eslint-plugin-vuejs-accessibility": "^2.6.2",
     "eslint-plugin-vuetify": "^2.7.3",
+    "happy-dom": "^21.0.4",
     "npm-run-all2": "^9.0.3",
     "tailwindcss": "^4.3.3",
     "typescript": "~6.0.0",
     "typescript-eslint": "^8.72.0",
     "vite": "^8.2.2",
     "vite-plugin-vue-devtools": "^8.2.1",
+    "vitest": "^5.0.5",
     "vue-tsc": "^3.3.11"
   },
   "engines": {
