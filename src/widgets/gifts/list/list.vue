@@ -136,7 +136,7 @@ const formatGiftDate = (date?: string) => {
             />
           </div>
 
-          <div class="d-flex ga-4 align-sm-center flex-sm-row flex-column">
+          <div class="d-flex ga-4 align-sm-center flex-sm-row flex-column w-sm-100 justify-sm-end">
             <v-text-field
               v-model="search"
               clearable
