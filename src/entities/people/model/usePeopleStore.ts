@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { type Ref, ref } from 'vue'
 import { type People } from "./types";
-import { addDoc, collection, deleteDoc, doc, onSnapshot, query } from 'firebase/firestore'
+import { addDoc, collection, deleteDoc, doc, onSnapshot, query, type QueryConstraint } from 'firebase/firestore'
 import { db } from '@/app/firebase'
 import { useNotificationStore } from "@/shared/appSnackbar";
 
@@ -25,9 +25,16 @@ export const usePeopleStore = defineStore('people', () => {
 
   let unsubscribe: (() => void) | null = null
 
-  function getPeopleList() {
+  function getPeopleList(filters: QueryConstraint[] = []) {
     isLoadingPeople.value = true
-    const q = query(collection(db, 'people'))
+    
+    if (unsubscribe) {
+      unsubscribe()
+    }
+
+    const peopleRef = collection(db, 'people')
+
+    const q = query(peopleRef, ...filters)
 
     unsubscribe = onSnapshot(q, (snapshot) => {
       people.value = snapshot.docs.map((doc) => ({

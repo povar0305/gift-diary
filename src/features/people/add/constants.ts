@@ -1,7 +1,6 @@
 import { FieldFormType, type FormFieldConfig } from "@/shared";
 import { z } from 'zod'
 import {
-  type HexColor,
   PackagingIconItems,
   PackagingIconSchema,
   type People,
@@ -24,11 +23,6 @@ export const FieldsPeopleAdd: FormFieldConfig[] = [
     required: true
   },
   {
-    key: 'color',
-    label: 'Цвет лейбла',
-    type: FieldFormType.Color
-  },
-  {
     key: 'icon',
     label: 'Иконка упаковки',
     items: PackagingIconItems,
@@ -37,14 +31,7 @@ export const FieldsPeopleAdd: FormFieldConfig[] = [
   },
 ]
 
-export const HexColorSchema = z
-  .string()
-  .regex(/^#[0-9A-F]{6}$/i, 'Неверный формат цвета')
-  .transform((val) => val as HexColor)
-
-
 export const PeopleAddSchema = z.object({
-  color: HexColorSchema,
   icon: PackagingIconSchema,
   name: z
     .string()

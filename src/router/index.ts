@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 import PeoplePage from "@/pages/people/PeoplePage.vue";
 import GiftsPage from "@/pages/gifts/GiftsPage.vue";
+import HumanPage from "@/pages/people/[id]/HumanPage.vue";
 
 
 const routes = [
@@ -18,6 +19,11 @@ const routes = [
       icon: 'mdi-account-group-outline',
       showInNav: true,
     },
+  },
+  {
+    path: '/people/:id',
+    name: 'current.people',
+    component: HumanPage,
   },
   {
     path: '/gifts',

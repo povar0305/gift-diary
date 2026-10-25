@@ -7,7 +7,11 @@ import { DataTable, StatusChipSelect, Text, Title } from "@/shared";
 import { columnsGifts, getMarketplaceFromUrl } from "./constants";
 import { GiftAdd } from "@/features/gift";
 import dayjs from 'dayjs'
-import { orderBy, where } from 'firebase/firestore'
+import { orderBy, type QueryConstraint, where } from 'firebase/firestore'
+import type { GiftsListProps } from "./types";
+
+
+const props = defineProps<GiftsListProps>()
 
 
 const isCreateDialogOpen = ref(false)
@@ -19,18 +23,28 @@ const { gifts, isLoadingGifts } = storeToRefs(giftsStore)
 const peopleStore = usePeopleStore()
 const { people, isLoadingPeople } = storeToRefs(peopleStore)
 
-const updateGiftsList = () => {
+const getCurrentFilters = (): QueryConstraint[] => {
+  const parentFilters = props.getFilters ? props.getFilters() : []
+
+  let internalFilters: QueryConstraint[] = []
+
   if (isShowedGiven.value) {
-    giftsStore.getGiftsList([
+    internalFilters = [
       where('status', '==', GiftStatus.Given),
       orderBy('datePickup', 'desc')
-    ])
+    ]
   } else {
-    giftsStore.getGiftsList([
+    internalFilters = [
       where('status', '!=', GiftStatus.Given),
       orderBy('datePickup', 'asc')
-    ])
+    ]
   }
+
+  return [...parentFilters, ...internalFilters]
+}
+
+const updateGiftsList = () => {
+  giftsStore.getGiftsList(getCurrentFilters())
 }
 
 onMounted(() => {
@@ -48,6 +62,7 @@ const isShowedGiven = ref(false)
 watch(isShowedGiven, () => {
   updateGiftsList()
 })
+
 const search = ref(null)
 
 const totalPrice = computed(() => gifts.value.reduce((total, item) => total + (item['price'] as number), 0))
@@ -102,13 +117,16 @@ const formatGiftDate = (date?: string) => {
       <template #header>
         <div class="d-flex justify-space-between align-center w-full">
           <div class="d-flex ga-2 align-center">
-            <Title>
-              Подарки
-            </Title>
+            <slot name="header">
+              <Title>
+                Подарки
+              </Title>
 
-            <Text>
-              ({{ gifts.length }})
-            </Text>
+              <Text>
+                ({{ gifts.length }})
+              </Text>
+            </slot>
+
 
             <v-btn
               density="compact"
@@ -202,7 +220,6 @@ const formatGiftDate = (date?: string) => {
 
       <template #no-data>
         <v-btn
-          density="compact"
           prepend-icon="mdi-plus"
           text="Создать подарок"
           variant="tonal"

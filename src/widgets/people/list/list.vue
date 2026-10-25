@@ -1,16 +1,11 @@
 <script lang="ts" setup>
 
 import { PeopleAdd } from "@/features/people";
-import { onMounted, onUnmounted, ref } from "vue";
-import {
-  type People,
-  PEOPLE_KEYS_TABLE,
-  PeopleFormLabels,
-  RelationPeopleLabels,
-  usePeopleStore
-} from "@/entities/people";
-import { DataTable, type TableColumn, Title } from "@/shared";
+import { computed, onMounted, onUnmounted, ref } from "vue";
+import { usePeopleStore } from "@/entities/people";
+import { Text, Title } from "@/shared";
 import { storeToRefs } from "pinia";
+import { PeopleCard } from "@/widgets/people";
 import { customFilterPeopleList } from "./constants";
 
 const isAddDialogOpen = ref(false)
@@ -18,6 +13,14 @@ const search = ref(null)
 
 const peopleStore = usePeopleStore()
 const { people, isLoadingPeople } = storeToRefs(peopleStore)
+
+const filteredPeople = computed(() => {
+  if (!search.value) return people.value
+
+  return people.value.filter(person => {
+    return customFilterPeopleList('', search.value!, person)
+  })
+})
 
 onMounted(() => {
   peopleStore.getPeopleList()
@@ -27,88 +30,79 @@ onUnmounted(() => {
   peopleStore.stopGetPeopleList()
 })
 
-const columnsPeople = PEOPLE_KEYS_TABLE.map((key): TableColumn => ({
-  key,
-  title: PeopleFormLabels[key],
-})).concat({
-  key: 'actions',
-  title: '',
-  sortable: false
-})
 </script>
 
 <template>
   <div class="d-flex flex-column ga-4">
-    <DataTable
-      :columns="columnsPeople"
-      :custom-filter="customFilterPeopleList"
-      :items="people as any"
-      :loading="isLoadingPeople"
-      :search="search"
-    >
-      <template #header>
-        <div class="d-flex justify-space-between align-center w-full">
-          <div class="d-flex ga-2 align-center">
-            <Title>
-              Люди
-            </Title>
+    <div class="d-flex justify-space-between align-center w-full">
+      <div class="d-flex ga-2 align-center">
+        <Title>
+          Люди
+        </Title>
 
-            <v-btn
-              density="compact"
-              icon="mdi-plus"
-              variant="text"
-              @click="isAddDialogOpen = !isAddDialogOpen"
-            />
-          </div>
-
-          <v-text-field
-            v-model="search"
-            clearable
-            density="compact"
-            hide-details
-            label="Поиск по любому параметру"
-            prepend-inner-icon="mdi-magnify"
-            style="max-width: 300px;"
-            variant="outlined"
-          />
-        </div>
-      </template>
-
-
-      <template #cell-relation="{ item }">
-        {{ RelationPeopleLabels[(item as unknown as People).relation] }}
-      </template>
-
-      <template #cell-icon="{ item }">
-        <v-icon :icon="(item as unknown as People).icon" />
-      </template>
-
-      <template #cell-color="{ item }">
-        <div
-          :style="{background: (item as unknown as People)?.color }"
-          class="color-picker"
-        />
-      </template>
-
-      <template #cell-actions="{ item }">
-        <v-btn
-          color="error"
-          icon="mdi-trash-can-outline"
-          variant="text"
-          @click="() => {peopleStore.removePeople((item as unknown as People).id)}"
-        />
-      </template>
-
-      <template #no-data>
         <v-btn
           density="compact"
-          prepend-icon="mdi-plus"
-          text="Создать человека"
-          variant="tonal"
+          icon="mdi-plus"
+          variant="text"
           @click="isAddDialogOpen = !isAddDialogOpen"
         />
-      </template>
-    </DataTable>
+      </div>
+
+      <v-text-field
+        v-model="search"
+        clearable
+        density="compact"
+        hide-details
+        label="Поиск по любому параметру"
+        prepend-inner-icon="mdi-magnify"
+        style="max-width: 300px;"
+        variant="outlined"
+      />
+    </div>
+
+    <v-row v-if="isLoadingPeople">
+      <v-col
+        v-for="index in 12"
+        :key="index"
+        cols="12"
+        md="4"
+        sm="6"
+      >
+        <v-skeleton-loader
+
+          type="list-item-avatar"
+        />
+      </v-col>
+    </v-row>
+
+
+    <v-row v-else-if="filteredPeople.length> 0 && !isLoadingPeople">
+      <v-col
+        v-for="human in filteredPeople"
+        :key="human.id"
+        cols="12"
+        md="4"
+        sm="6"
+      >
+        <PeopleCard :person="human" />
+      </v-col>
+    </v-row>
+
+    <div
+      v-else
+      class="d-flex align-center justify-center flex-column ga-4"
+    >
+      <Text class="d-flex justify-center ">
+        К сожалению, не нашлось людей
+      </Text>
+
+      <v-btn
+        prepend-icon="mdi-plus"
+        text="Добавить человека"
+        variant="tonal"
+        @click="isAddDialogOpen = !isAddDialogOpen"
+      />
+    </div>
 
     <PeopleAdd
       v-model="isAddDialogOpen"
