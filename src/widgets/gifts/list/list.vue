@@ -220,7 +220,6 @@ const formatGiftDate = (date?: string) => {
 
       <template #no-data>
         <v-btn
-          density="compact"
           prepend-icon="mdi-plus"
           text="Создать подарок"
           variant="tonal"

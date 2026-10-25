@@ -36,6 +36,7 @@ const assemblyFilters = () => [
     <PeopleCard
       v-if="person"
       :person="person"
+      variant="default"
     />
 
     <GiftList :get-filters="assemblyFilters" />
