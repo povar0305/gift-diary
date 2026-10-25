@@ -1,7 +1,9 @@
 <script lang="ts" setup>
 import { DynamicForm, Title } from '@/shared'
-import { FieldsPeopleAdd, type PeopleAddFormData, PeopleAddSchema } from './constants'
+import { getFieldsPeopleAdd, type PeopleAddFormData, PeopleAddSchema } from './constants'
 import { usePeopleStore } from "@/entities/people";
+import { storeToRefs } from "pinia";
+import { computed } from "vue";
 
 defineProps<{
   modelValue: boolean
@@ -11,15 +13,26 @@ const emit = defineEmits<{
   (e: 'update:modelValue', value: boolean): void
 }>()
 
-const store = usePeopleStore()
+const peopleStore = usePeopleStore()
 
 const close = () => emit('update:modelValue', false)
 
 const onSubmit = (data: PeopleAddFormData) => {
-  store.addPeople(data)
+  peopleStore.addPeople(data)
 
   close()
 }
+
+
+const { people } = storeToRefs(peopleStore)
+const usedIcons = computed(() => {
+  return people.value
+      .map(p => p.icon)
+      .filter((icon): icon is string => Boolean(icon))
+})
+
+const fields = computed(() => getFieldsPeopleAdd(usedIcons.value))
+
 </script>
 
 <template>
@@ -41,7 +54,7 @@ const onSubmit = (data: PeopleAddFormData) => {
       </div>
 
       <DynamicForm
-        :fields="FieldsPeopleAdd"
+        :fields="fields"
         :schema="PeopleAddSchema"
         submit-label="Добавить"
         @submit="onSubmit"
