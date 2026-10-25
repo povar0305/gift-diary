@@ -8,28 +8,35 @@ import {
   RelationPeopleItems
 } from "@/entities/people";
 
-export const FieldsPeopleAdd: FormFieldConfig[] = [
-  {
-    key: 'name',
-    label: 'Имя',
-    type: FieldFormType.Text,
-    required: true
-  },
-  {
-    key: 'relation',
-    label: 'Связь',
-    type: FieldFormType.Select,
-    items: RelationPeopleItems,
-    required: true
-  },
-  {
-    key: 'icon',
-    label: 'Иконка упаковки',
-    items: PackagingIconItems,
-    type: FieldFormType.Icon,
-    required: true
-  },
-]
+
+export const getFieldsPeopleAdd = (usedIcons: string[] = []): FormFieldConfig[] => {
+  const availableIcons = PackagingIconItems.filter(
+    item => !usedIcons.includes(item.value)
+  )
+
+  return [
+    {
+      key: 'name',
+      label: 'Имя',
+      type: FieldFormType.Text,
+      required: true
+    },
+    {
+      key: 'relation',
+      label: 'Связь',
+      type: FieldFormType.Select,
+      items: RelationPeopleItems,
+      required: true
+    },
+    {
+      key: 'icon',
+      label: 'Иконка упаковки',
+      items: availableIcons,
+      type: FieldFormType.Icon,
+      required: true
+    },
+  ]
+}
 
 export const PeopleAddSchema = z.object({
   icon: PackagingIconSchema,
