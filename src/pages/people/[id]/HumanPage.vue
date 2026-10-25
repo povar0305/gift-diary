@@ -11,9 +11,7 @@ const route = useRoute()
 const router = useRouter()
 
 const handlePeopleDeleted = () => {
-  setTimeout(() => {
-    router.push({ name: 'people' })
-  }, 500)
+  router.push({ name: 'people' })
 }
 
 const personId = computed(() => route.params.id as string)
