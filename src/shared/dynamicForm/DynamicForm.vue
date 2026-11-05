@@ -1,19 +1,15 @@
 <script generic="T extends Record<string, unknown >" lang="ts" setup>
-import { computed, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
 import { type DynamicFormProps, FieldFormType } from './types'
 import { Text } from "@/shared";
 
 const propsComponent = defineProps<DynamicFormProps<T>>()
-propsComponent.fields.forEach((field) => {
-  formData[field.key] = propsComponent.initialValues?.[field.key as keyof T] ?? getDefaultValue(field.type)
-})
 
 const emit = defineEmits<{
   (e: 'submit', data: T): void
 }>()
 
 const formRef = ref()
-const formData = reactive<Record<string, unknown>>({})
 
 function getDefaultValue(type: string) {
   if (type === 'checkbox') return false
@@ -21,7 +17,14 @@ function getDefaultValue(type: string) {
   return ''
 }
 
+const formData = reactive<Record<string, unknown>>({})
 const errors = ref<Record<string, string>>({})
+
+onMounted(() => {
+  propsComponent.fields.forEach((field) => {
+    formData[field.key] = propsComponent.initialValues?.[field.key as keyof T] ?? getDefaultValue(field.type)
+  })
+})
 
 const onSubmit = async () => {
   const result = propsComponent.schema.safeParse(formData)
