@@ -25,7 +25,7 @@ withDefaults(
 
 <style scoped>
 .text {
-  width: 100%;
+  width: auto;
   max-width: 65ch;
   font-size: clamp(1rem, 2vw, 1.125rem);
   font-family: inherit;

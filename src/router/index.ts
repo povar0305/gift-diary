@@ -1,6 +1,7 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 
 import PeoplePage from "@/pages/people/PeoplePage.vue";
+import PeopleWithoutGiftPage from "@/pages/people/without-gift/PeopleWithoutGiftPage.vue";
 import GiftsPage from "@/pages/gifts/GiftsPage.vue";
 import HumanPage from "@/pages/people/[id]/HumanPage.vue";
 
@@ -16,6 +17,16 @@ const routes = [
     meta: {
       title: 'Люди',
       icon: 'mdi-account-group-outline',
+      showInNav: true,
+    },
+  },
+  {
+    path: '/people/without-gifts',
+    name: 'people.without-gifts',
+    component: PeopleWithoutGiftPage,
+    meta: {
+      title: 'Люди без подарка',
+      icon: 'mdi-account-off-outline',
       showInNav: true,
     },
   },
