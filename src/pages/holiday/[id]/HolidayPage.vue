@@ -1,12 +1,12 @@
 <script lang="ts" setup>
 import { useRoute, useRouter } from 'vue-router'
-import { computed, onMounted, onUnmounted } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { type Holiday, useHolidayStore } from "@/entities/holiday";
 import { GiftList } from "@/widgets/gifts";
 import { HolidayPeopleList } from '@/widgets/holiday';
 import { orderBy, where } from "firebase/firestore";
-import { Text, Title } from "@/shared";
+import { ConfirmDialog, Text, Title } from "@/shared";
 import dayjs from 'dayjs'
 
 const route = useRoute()
@@ -21,6 +21,8 @@ const holiday = computed<Holiday | undefined>(() => {
   return holidays.value.find(h => h.id === holidayId.value)
 })
 
+const isConfirmDeleteOpen = ref(false)
+
 const formatDate = (date?: string) => {
   if (!date || date.length === 0) return ''
   return dayjs(date).format('DD.MM.YYYY')
@@ -30,6 +32,15 @@ const assemblyFilters = () => [
   where('holidayId', '==', holidayId.value),
   orderBy('status', 'asc')
 ]
+
+const handleDeleteHoliday = () => {
+  isConfirmDeleteOpen.value = true
+}
+
+const confirmDeleteHoliday = () => {
+  holidayStore.removeHoliday(holidayId.value)
+  router.push({ name: 'holidays' })
+}
 
 onMounted(() => {
   holidayStore.getHolidaysList()
@@ -64,7 +75,9 @@ onUnmounted(() => {
 
           <div class="d-flex flex-column ga-1">
             <Title :text="holiday.title" />
+
             <Text>Дата: {{ formatDate(holiday.date) }}</Text>
+
             <Text v-if="holiday.note">Заметка: {{ holiday.note }}</Text>
           </div>
         </div>
@@ -74,7 +87,7 @@ onUnmounted(() => {
           density="compact"
           icon="mdi-trash-can-outline"
           variant="text"
-          @click="() => { holidayStore.removeHoliday(holidayId); router.push({ name: 'holidays' }) }"
+          @click="handleDeleteHoliday"
         />
       </div>
     </v-card>
@@ -85,6 +98,13 @@ onUnmounted(() => {
     />
 
     <GiftList :get-filters="assemblyFilters" />
+
+    <ConfirmDialog
+      :model-value="isConfirmDeleteOpen"
+      title="Удаление праздника"
+      message="Вы уверены, что хотите удалить этот праздник? Все подарки останутся без группы."
+      @confirm="confirmDeleteHoliday"
+    />
   </div>
 </template>
 

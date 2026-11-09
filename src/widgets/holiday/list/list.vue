@@ -2,12 +2,14 @@
 import { computed, onMounted, onUnmounted, ref } from "vue";
 import { type Holiday, useHolidayStore } from "@/entities/holiday";
 import { storeToRefs } from "pinia";
-import { DataTable, Text, Title } from "@/shared";
+import { DataTable, Text, Title, ConfirmDialog } from "@/shared";
 import { columnsHolidays, customFilterHolidays, formatHolidayDate } from "./constants";
 import { HolidayAdd } from "@/features/holiday";
 
 const isCreateDialogOpen = ref(false)
 const editHolidayId = ref<string | null>(null)
+const removeHolidayId = ref<string | null>(null)
+const removeHolidayTitle = ref('')
 const search = ref(null)
 
 const holidayStore = useHolidayStore()
@@ -15,8 +17,16 @@ const { holidays, isLoadingHolidays } = storeToRefs(holidayStore)
 
 const editingHoliday = computed(() => holidays.value.find(h => h.id === editHolidayId.value) ?? undefined)
 
-const handleDeleteHoliday = (id: Holiday['id']) => {
-  holidayStore.removeHoliday(id)
+const handleDeleteHoliday = (id: Holiday['id'], title: string) => {
+  removeHolidayId.value = id
+  removeHolidayTitle.value = title
+}
+
+const confirmRemoveHoliday = () => {
+  if (removeHolidayId.value) {
+    holidayStore.removeHoliday(removeHolidayId.value)
+    removeHolidayId.value = null
+  }
 }
 
 const handleEditHoliday = (id: Holiday['id']) => {
@@ -91,7 +101,7 @@ onUnmounted(() => {
             icon="mdi-trash-can-outline"
             size="small"
             variant="text"
-            @click="handleDeleteHoliday(item.id)"
+            @click="handleDeleteHoliday(item.id, item.title)"
           />
         </v-btn-group>
       </template>
@@ -127,6 +137,13 @@ onUnmounted(() => {
       :holiday="editingHoliday"
       :model-value="editHolidayId !== null"
       @update:model-value="(v) => { if (!v) editHolidayId = null }"
+    />
+
+    <ConfirmDialog
+      :model-value="removeHolidayId !== null"
+      title="Удаление праздника"
+      :message="'Вы уверены, что хотите удалить праздник «' + removeHolidayTitle + '»? Все подарки этого праздника останутся без группы.'"
+      @confirm="confirmRemoveHoliday"
     />
   </div>
 </template>

@@ -4,7 +4,7 @@ import { type Gift, GiftStatus, GiftStatusItems, useGiftStore } from "@/entities
 import { type People, usePeopleStore } from "@/entities/people";
 import { useHolidayStore } from "@/entities/holiday";
 import { storeToRefs } from "pinia";
-import { DataTable, StatusChipSelect, Text, Title } from "@/shared";
+import { ConfirmDialog, DataTable, StatusChipSelect, Text, Title } from "@/shared";
 import { columnsGifts, getMarketplaceFromUrl } from "./constants";
 import { GiftAdd } from "@/features/gift";
 import dayjs from 'dayjs'
@@ -15,6 +15,8 @@ const props = defineProps<GiftsListProps>()
 
 const isCreateDialogOpen = ref(false)
 const editGiftId = ref<string | null>(null)
+const removeGiftId = ref<string | null>(null)
+const removeGiftTitle = ref('')
 
 const giftsStore = useGiftStore()
 const { gifts, isLoadingGifts } = storeToRefs(giftsStore)
@@ -34,6 +36,19 @@ const search = ref(null)
 
 const selectedHolidayId = ref<string | null>(null)
 const isShowedGiven = ref(false)
+
+const handleRemoveGift = (id: Gift['id']) => {
+  removeGiftId.value = id
+  const gift = gifts.value.find(g => g.id === id)
+  removeGiftTitle.value = gift?.title ?? ''
+}
+
+const confirmRemoveGift = () => {
+  if (removeGiftId.value) {
+    giftsStore.removeGift(removeGiftId.value)
+    removeGiftId.value = null
+  }
+}
 
 const giftFilter = computed(() => createGiftFilter(people.value))
 const createGiftFilter = (peopleList: People[]) => {
@@ -210,18 +225,18 @@ onUnmounted(() => {
             icon="mdi-trash-can-outline"
             size="small"
             variant="text"
-            @click="() => { giftsStore.removeGift((item as Gift).id) }"
+            @click="handleRemoveGift((item as Gift).id)"
           />
         </v-btn-group>
       </template>
 
       <template #cell-personId="{ item }">
-        {{ people.find((hero) => hero?.id === item?.personId)?.name }}
+        {{ people.find((hero) => hero?.id === (item as Gift)?.personId)?.name }}
       </template>
 
       <template #cell-datePickup="{ item }">
         <div
-          v-if="item?.link"
+          v-if="(item as Gift)?.link"
           class="d-flex ga-2 align-center"
         >
           {{ formatGiftDate((item as Gift).datePickup) }}
@@ -229,7 +244,7 @@ onUnmounted(() => {
           <v-btn
             :color="getMarketplaceFromUrl((item as Gift).link || '').color"
 
-            :href="item.link as string"
+            :href="(item as Gift).link as string"
             :icon="getMarketplaceFromUrl((item as Gift).link || '').icon"
             size="small"
             target="_blank"
@@ -238,13 +253,13 @@ onUnmounted(() => {
         </div>
       </template>
 
-      <template #cell-status="{ item }: { item: Gift }">
+      <template #cell-status="{ item }">
         <div class="d-flex ga-4 align-center">
           <StatusChipSelect
             :items="GiftStatusItems"
-            :model-value="item.status"
+            :model-value="(item as Gift).status"
             @update:model-value="(newStatus) => {
-              giftsStore.updateGift(item.id, 'status', newStatus as GiftStatus)
+              giftsStore.updateGift((item as Gift).id, 'status', newStatus as GiftStatus)
             }"
           />
 
@@ -252,14 +267,14 @@ onUnmounted(() => {
             v-if="[
               GiftStatus.AtHome,
               GiftStatus.Wrapped
-            ].includes(item.status)"
-            :icon="people.find((hero) => hero?.id === item?.personId)?.icon"
+            ].includes((item as Gift).status)"
+            :icon="people.find((hero) => hero?.id === (item as Gift)?.personId)?.icon"
           />
         </div>
       </template>
 
-      <template #cell-holidayId="{ item }: { item: Gift }">
-        {{ holidays.find(h => h.id === item.holidayId)?.title }}
+      <template #cell-holidayId="{ item }">
+        {{ holidays.find(h => h.id === (item as Gift).holidayId)?.title }}
       </template>
 
       <template #no-data>
@@ -286,6 +301,14 @@ onUnmounted(() => {
       :gift="editingGift"
       :model-value="editGiftId !== null"
       @update:model-value="(v) => { if (!v) editGiftId = null }"
+    />
+
+    <ConfirmDialog
+      :message="'Вы уверены, что хотите удалить подарок «' + removeGiftTitle + '»?'"
+      :model-value="removeGiftId !== null"
+      title="Удаление подарка"
+      @confirm="confirmRemoveGift"
+      @update:model-value="removeGiftId = null"
     />
   </div>
 </template>

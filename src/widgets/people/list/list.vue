@@ -10,6 +10,7 @@ import { customFilterPeopleList } from "./constants";
 const isAddDialogOpen = ref(false)
 const search = ref(null)
 
+
 const peopleStore = usePeopleStore()
 const { people, isLoadingPeople } = storeToRefs(peopleStore)
 

@@ -1,4 +1,4 @@
-<script generic="T extends Record<string, unknown>" lang="ts" setup>
+<script generic="T extends Record<string, any>" lang="ts" setup>
 import { computed, useSlots } from 'vue'
 import { Text } from '@/shared'
 import { type DataTableProps } from './types'
@@ -38,7 +38,7 @@ const slots = useSlots()
       >
         <slot
           v-if="slots[`cell-${col.key}`]"
-          :item="item as T"
+          :item="(item as unknown) as T"
           :name="`cell-${col.key}`"
           :value="item[col.key]"
         />
@@ -46,7 +46,7 @@ const slots = useSlots()
         <component
           :is="col.component"
           v-else-if="col.component"
-          v-bind="{ ...col.componentProps, item: item as T }"
+          v-bind="{ ...col.componentProps, item: (item as unknown) as T }"
         />
 
         <span v-else>
