@@ -20,13 +20,13 @@ const goBack = () => {
     flat
     height="64"
   >
-    <div class="d-flex align-center w-100 px-4">
+    <div class="d-flex align-center w-100 px-4 overflow-auto">
       <v-btn
         icon="mdi-arrow-left"
         variant="plain"
         @click="goBack"
       />
-      
+
       <nav class="d-flex ga-2">
         <v-btn
           v-for="item in navigationItems"
