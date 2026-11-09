@@ -13,9 +13,11 @@ import type { GiftsListProps } from "./types";
 const props = defineProps<GiftsListProps>()
 
 const isCreateDialogOpen = ref(false)
+const editGiftId = ref<string | null>(null)
 
 const giftsStore = useGiftStore()
 const { gifts, isLoadingGifts } = storeToRefs(giftsStore)
+const editingGift = computed(() => gifts.value.find(g => g.id === editGiftId.value) ?? undefined)
 const formatGiftDate = (date?: string) => {
   if (!date || date.length === 0) return ''
   return dayjs(date).format('DD.MM.YYYY')
@@ -74,7 +76,11 @@ const getCurrentFilters = (): QueryConstraint[] => {
 const updateGiftsList = () => {
   giftsStore.getGiftsList(getCurrentFilters())
 }
-const totalPrice = computed(() => gifts.value.reduce((total, item) => total + (item['price'] as number), 0))
+const totalPrice = computed(() => gifts.value
+    .reduce((total, item) => total + (item['price'] as number), 0))
+const totalPriceApproved = computed(() => gifts.value
+    .filter(item => item.status !== GiftStatus.Idea)
+    .reduce((total, item) => total + (item['price'] as number), 0))
 
 const peopleStore = usePeopleStore()
 const { people, isLoadingPeople } = storeToRefs(peopleStore)
@@ -154,21 +160,26 @@ onUnmounted(() => {
       </template>
 
       <template #cell-actions="{ item }">
-        <v-btn
-          :href="item.link as string"
-          color="grey-lighten-1"
-          icon="mdi-open-in-new"
-          size="small"
-          target="_blank"
-          variant="text"
-        />
+        <v-btn-group
+          density="comfortable"
+          variant="outlined"
+        >
+          <v-btn
+            color="primary"
+            icon="mdi-pencil-outline"
+            size="small"
+            variant="text"
+            @click="editGiftId = (item as Gift).id"
+          />
 
-        <v-btn
-          color="error"
-          icon="mdi-trash-can-outline"
-          variant="text"
-          @click="() => { giftsStore.removeGift((item as Gift).id) }"
-        />
+          <v-btn
+            color="error"
+            icon="mdi-trash-can-outline"
+            size="small"
+            variant="text"
+            @click="() => { giftsStore.removeGift((item as Gift).id) }"
+          />
+        </v-btn-group>
       </template>
 
       <template #cell-personId="{ item }">
@@ -184,8 +195,11 @@ onUnmounted(() => {
 
           <v-btn
             :color="getMarketplaceFromUrl((item as Gift).link || '').color"
+
+            :href="item.link as string"
             :icon="getMarketplaceFromUrl((item as Gift).link || '').icon"
             size="small"
+            target="_blank"
             variant="plain"
           />
         </div>
@@ -222,11 +236,19 @@ onUnmounted(() => {
     </datatable>
 
     <Text v-if="totalPrice>0">
-      Общая сумма: {{ totalPrice }} ₽
+      Общая сумма: {{ totalPrice }} ₽, подтверждено {{ totalPriceApproved }} ₽
     </Text>
 
     <GiftAdd
+      v-if="!editingGift"
       v-model="isCreateDialogOpen"
+    />
+
+    <GiftAdd
+      v-else
+      :gift="editingGift"
+      :model-value="editGiftId !== null"
+      @update:model-value="(v) => { if (!v) editGiftId = null }"
     />
   </div>
 </template>

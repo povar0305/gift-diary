@@ -1,13 +1,15 @@
 <script lang="ts" setup>
+import { computed } from "vue";
 import { DynamicForm, Title } from '@/shared'
-import { type GiftCreateFormData, GiftCreateSchema, useGiftStore } from "@/entities/gift";
+import { type Gift, type GiftCreateFormData, GiftCreateSchema, useGiftStore } from "@/entities/gift";
 import { getFieldsGiftCreate, GitsCreateInitialValues } from "./constants";
 import { usePeopleStore } from "@/entities/people";
 import { storeToRefs } from "pinia";
 import { onMounted, onUnmounted } from "vue";
 
-defineProps<{
+const props = defineProps<{
   modelValue: boolean
+  gift?: Gift
 }>()
 
 const emit = defineEmits<{
@@ -15,6 +17,19 @@ const emit = defineEmits<{
 }>()
 
 const store = useGiftStore()
+
+const isEdit = computed(() => Boolean(props.gift))
+
+const initialValues = computed(() => props.gift
+  ? {
+      personId: props.gift.personId,
+      title: props.gift.title,
+      status: props.gift.status,
+      price: props.gift.price,
+      link: props.gift.link,
+      datePickup: props.gift.datePickup
+    }
+  : GitsCreateInitialValues)
 
 const peopleStore = usePeopleStore()
 const { people } = storeToRefs(peopleStore)
@@ -30,7 +45,11 @@ onUnmounted(() => {
 const close = () => emit('update:modelValue', false)
 
 const onSubmit = (data: GiftCreateFormData) => {
-  store.createGift(data)
+  if (props.gift) {
+    store.updateGiftData(props.gift.id, data)
+  } else {
+    store.createGift(data)
+  }
 
   close()
 }
@@ -45,7 +64,7 @@ const onSubmit = (data: GiftCreateFormData) => {
   >
     <v-card class="pa-6 rounded-xl">
       <div class="d-flex justify-space-between align-center mb-6">
-        <Title text="Создание подарка" />
+        <Title :text="isEdit ? 'Редактирование подарка' : 'Создание подарка'" />
 
         <v-btn
           density="comfortable"
@@ -57,8 +76,9 @@ const onSubmit = (data: GiftCreateFormData) => {
 
       <DynamicForm
         :fields="getFieldsGiftCreate(people)"
-        :initial-values="GitsCreateInitialValues"
+        :initial-values="initialValues"
         :schema="GiftCreateSchema"
+        :submit-label="isEdit ? 'Сохранить' : 'Создать'"
         @submit="onSubmit"
       />
     </v-card>
