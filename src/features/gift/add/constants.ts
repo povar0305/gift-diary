@@ -1,8 +1,9 @@
 import { FieldFormType, type FormFieldConfig } from "@/shared";
 import type { People } from "@/entities/people";
+import type { Holiday } from "@/entities/holiday";
 import { GiftStatus, GiftStatusItems } from "@/entities/gift";
 
-export const getFieldsGiftCreate = (people: People[]): FormFieldConfig[] => {
+export const getFieldsGiftCreate = (people: People[], holidays: Holiday[]): FormFieldConfig[] => {
   return [
     {
       key: 'title',
@@ -51,6 +52,16 @@ export const getFieldsGiftCreate = (people: People[]): FormFieldConfig[] => {
           GiftStatus.ToPickup
         ].includes(status)
       }
+    },
+    {
+      key: 'holidayId',
+      label: 'Праздник',
+      type: FieldFormType.Select,
+      items: holidays.map((item) => ({
+        title: item.title,
+        value: item.id,
+      })),
+      required: false,
     },
   ]
 }

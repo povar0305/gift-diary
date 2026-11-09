@@ -2,6 +2,7 @@
 import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import { type Gift, GiftStatus, GiftStatusItems, useGiftStore } from "@/entities/gift";
 import { type People, usePeopleStore } from "@/entities/people";
+import { useHolidayStore } from "@/entities/holiday";
 import { storeToRefs } from "pinia";
 import { DataTable, StatusChipSelect, Text, Title } from "@/shared";
 import { columnsGifts, getMarketplaceFromUrl } from "./constants";
@@ -22,6 +23,17 @@ const formatGiftDate = (date?: string) => {
   if (!date || date.length === 0) return ''
   return dayjs(date).format('DD.MM.YYYY')
 }
+
+const peopleStore = usePeopleStore()
+const { people, isLoadingPeople } = storeToRefs(peopleStore)
+
+const holidayStore = useHolidayStore()
+const { holidays } = storeToRefs(holidayStore)
+
+const search = ref(null)
+
+const selectedHolidayId = ref<string | null>(null)
+const isShowedGiven = ref(false)
 
 const giftFilter = computed(() => createGiftFilter(people.value))
 const createGiftFilter = (peopleList: People[]) => {
@@ -51,6 +63,13 @@ const createGiftFilter = (peopleList: People[]) => {
       }
     }
 
+    if (gift.holidayId) {
+      const holiday = holidays.value.find(h => h.id === gift.holidayId)
+      if (holiday && holiday.title.toLowerCase().includes(searchLower)) {
+        return true
+      }
+    }
+
     return false
   }
 }
@@ -71,6 +90,10 @@ const getCurrentFilters = (): QueryConstraint[] => {
     ]
   }
 
+  if (selectedHolidayId.value) {
+    internalFilters.push(where('holidayId', '==', selectedHolidayId.value))
+  }
+
   return [...parentFilters, ...internalFilters]
 }
 const updateGiftsList = () => {
@@ -82,25 +105,24 @@ const totalPriceApproved = computed(() => gifts.value
     .filter(item => item.status !== GiftStatus.Idea)
     .reduce((total, item) => total + (item['price'] as number), 0))
 
-const peopleStore = usePeopleStore()
-const { people, isLoadingPeople } = storeToRefs(peopleStore)
-
-const search = ref(null)
-
-
-const isShowedGiven = ref(false)
 watch(isShowedGiven, () => {
+  updateGiftsList()
+})
+
+watch(selectedHolidayId, () => {
   updateGiftsList()
 })
 
 onMounted(() => {
   updateGiftsList()
   peopleStore.getPeopleList()
+  holidayStore.getHolidaysList()
 })
 
 onUnmounted(() => {
   giftsStore.stopFetchingGifts()
   peopleStore.stopGetPeopleList()
+  holidayStore.stopFetchingHolidays()
 })
 </script>
 
@@ -144,6 +166,17 @@ onUnmounted(() => {
               label="Поиск по любому параметру"
               prepend-inner-icon="mdi-magnify"
               style="max-width: 350px; min-width: 250px; width: 100%;"
+              variant="outlined"
+            />
+
+            <v-select
+              v-model="selectedHolidayId"
+              :items="[{ title: 'Все праздники', value: null }, ...holidays.map(h => ({ title: h.title, value: h.id }))]"
+              clearable
+              density="compact"
+              hide-details
+              label="Фильтр по празднику"
+              style="max-width: 250px; min-width: 200px; width: 100%;"
               variant="outlined"
             />
 
@@ -205,13 +238,13 @@ onUnmounted(() => {
         </div>
       </template>
 
-      <template #cell-status="{ item }">
+      <template #cell-status="{ item }: { item: Gift }">
         <div class="d-flex ga-4 align-center">
           <StatusChipSelect
             :items="GiftStatusItems"
-            :model-value="(item as Gift).status"
+            :model-value="item.status"
             @update:model-value="(newStatus) => {
-              giftsStore.updateGift((item as Gift).id, 'status', newStatus as GiftStatus)
+              giftsStore.updateGift(item.id, 'status', newStatus as GiftStatus)
             }"
           />
 
@@ -219,10 +252,14 @@ onUnmounted(() => {
             v-if="[
               GiftStatus.AtHome,
               GiftStatus.Wrapped
-            ].includes((item as Gift).status)"
+            ].includes(item.status)"
             :icon="people.find((hero) => hero?.id === item?.personId)?.icon"
           />
         </div>
+      </template>
+
+      <template #cell-holidayId="{ item }: { item: Gift }">
+        {{ holidays.find(h => h.id === item.holidayId)?.title }}
       </template>
 
       <template #no-data>

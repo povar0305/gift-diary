@@ -4,6 +4,8 @@ import PeoplePage from "@/pages/people/PeoplePage.vue";
 import PeopleWithoutGiftPage from "@/pages/people/without-gift/PeopleWithoutGiftPage.vue";
 import GiftsPage from "@/pages/gifts/GiftsPage.vue";
 import HumanPage from "@/pages/people/[id]/HumanPage.vue";
+import HolidaysPage from "@/pages/holidays/HolidaysPage.vue";
+import HolidayPage from "@/pages/holiday/[id]/HolidayPage.vue";
 
 const routes = [
   {
@@ -44,6 +46,21 @@ const routes = [
       icon: 'mdi-account-group-outline',
       showInNav: true,
     },
+  },
+  {
+    path: '/holidays',
+    name: 'holidays',
+    component: HolidaysPage,
+    meta: {
+      title: 'Праздники',
+      icon: 'mdi-gift-outline',
+      showInNav: true,
+    },
+  },
+  {
+    path: '/holidays/:id',
+    name: 'current.holiday',
+    component: HolidayPage,
   }
 ]
 

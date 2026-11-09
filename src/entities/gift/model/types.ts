@@ -22,6 +22,7 @@ export type Gift = {
   price?: number
   link?: ExternalUrl
   datePickup?: string
+  holidayId?: string
 }
 
 
@@ -38,6 +39,7 @@ export const GiftCreateSchema = z.object({
     .optional()
     .or(z.literal('')),
   datePickup: z.string().optional(),
+  holidayId: z.string().optional(),
 })
 
 export type GiftCreateFormData = z.infer<typeof GiftCreateSchema>
