@@ -82,5 +82,17 @@ export const useGiftStore = defineStore('gift', () => {
     }
   }
 
-  return { gifts, isLoadingGifts, getGiftsList, stopFetchingGifts, createGift, removeGift, updateGift }
+  async function updateGiftData(giftId: Gift['id'], data: GiftCreateFormData) {
+    try {
+      const giftRef = doc(db, 'gifts', giftId)
+
+      await updateDoc(giftRef, { ...data })
+
+      notify.success('Подарок обновлен!')
+    } catch (error) {
+      notify.error(`Ошибка при обновлении подарка: ${error}`)
+    }
+  }
+
+  return { gifts, isLoadingGifts, getGiftsList, stopFetchingGifts, createGift, removeGift, updateGift, updateGiftData }
 })

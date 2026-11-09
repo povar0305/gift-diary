@@ -75,6 +75,35 @@ describe('useGiftStore', () => {
     )
   })
 
+  it('должен успешно обновлять все поля подарка', async () => {
+    const store = useGiftStore()
+
+    vi.mocked(updateDoc).mockResolvedValue()
+
+    const data = {
+      personId: 'person-123',
+      title: 'Обновлённый подарок',
+      status: GiftStatus.Ordered,
+      price: 2000,
+      link: 'https://example.com',
+      datePickup: ''
+    }
+
+    await store.updateGiftData('gift-1', data)
+
+    expect(updateDoc).toHaveBeenCalledTimes(1)
+    expect(updateDoc).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({
+        personId: 'person-123',
+        title: 'Обновлённый подарок',
+        status: GiftStatus.Ordered,
+        price: 2000,
+        link: 'https://example.com'
+      })
+    )
+  })
+
   it('должен подписываться на изменения (getGiftsList)', () => {
     const store = useGiftStore()
 
