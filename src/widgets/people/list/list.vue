@@ -35,7 +35,7 @@ onUnmounted(() => {
   <div class="d-flex flex-column ga-4">
     <div class="d-flex justify-space-between align-sm-center w-full flex-column flex-sm-row w-100 ga-2 ga-sm-0">
       <div class="d-flex ga-2 align-center w-100">
-        <div class="d-flex ga-2 align-center w-100">
+        <div class="d-flex ga-2 align-center">
           <Title>
             Люди
           </Title>

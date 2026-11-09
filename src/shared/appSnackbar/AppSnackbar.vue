@@ -12,7 +12,6 @@ const { isVisible, message, color, timeout, icon } = storeToRefs(store)
     :color="color"
     :timeout="timeout"
     location="top right"
-    rounded="pill"
     variant="outlined"
     @update:model-value="(val) => !val && store.close()"
   >
