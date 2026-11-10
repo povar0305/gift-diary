@@ -2,7 +2,7 @@
 import { computed, onMounted, onUnmounted, ref } from "vue";
 import { type Holiday, useHolidayStore } from "@/entities/holiday";
 import { storeToRefs } from "pinia";
-import { DataTable, Text, Title, ConfirmDialog } from "@/shared";
+import { ConfirmDialog, DataTable, Text, Title } from "@/shared";
 import { columnsHolidays, customFilterHolidays, formatHolidayDate } from "./constants";
 import { HolidayAdd } from "@/features/holiday";
 
@@ -83,7 +83,7 @@ onUnmounted(() => {
         </div>
       </template>
 
-      <template #cell-actions="{ item }: { item: Holiday }">
+      <template #cell-actions="{ item }">
         <v-btn-group
           density="comfortable"
           variant="outlined"
@@ -106,11 +106,11 @@ onUnmounted(() => {
         </v-btn-group>
       </template>
 
-      <template #cell-date="{ item }: { item: Holiday }">
+      <template #cell-date="{ item }">
         {{ formatHolidayDate(item.date) }}
       </template>
 
-      <template #cell-icon="{ item }: { item: Holiday }">
+      <template #cell-icon="{ item }">
         <v-icon
           v-if="item.icon"
           :icon="item.icon"
@@ -140,9 +140,9 @@ onUnmounted(() => {
     />
 
     <ConfirmDialog
+      :message="'Вы уверены, что хотите удалить праздник «' + removeHolidayTitle + '»? Все подарки этого праздника останутся без группы.'"
       :model-value="removeHolidayId !== null"
       title="Удаление праздника"
-      :message="'Вы уверены, что хотите удалить праздник «' + removeHolidayTitle + '»? Все подарки этого праздника останутся без группы.'"
       @confirm="confirmRemoveHoliday"
     />
   </div>
