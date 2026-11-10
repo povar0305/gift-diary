@@ -19,3 +19,8 @@ export type DataTableProps<T> = {
   search?: string | null
   customFilter?: FilterFunction
 }
+
+export type DataTableSlotProps<T> = {
+  item: T
+  value: unknown
+}

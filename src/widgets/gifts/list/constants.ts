@@ -27,6 +27,10 @@ export const columnsGifts: TableColumn[] = [
     }
   },
   {
+    key: 'holidayId',
+    title: 'Праздник',
+  },
+  {
     key: 'actions',
     title: '',
   },

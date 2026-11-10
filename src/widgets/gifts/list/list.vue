@@ -2,8 +2,9 @@
 import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import { type Gift, GiftStatus, GiftStatusItems, useGiftStore } from "@/entities/gift";
 import { type People, usePeopleStore } from "@/entities/people";
+import { useHolidayStore } from "@/entities/holiday";
 import { storeToRefs } from "pinia";
-import { DataTable, StatusChipSelect, Text, Title } from "@/shared";
+import { ConfirmDialog, DataTable, StatusChipSelect, Text, Title } from "@/shared";
 import { columnsGifts, getMarketplaceFromUrl } from "./constants";
 import { GiftAdd } from "@/features/gift";
 import dayjs from 'dayjs'
@@ -14,6 +15,8 @@ const props = defineProps<GiftsListProps>()
 
 const isCreateDialogOpen = ref(false)
 const editGiftId = ref<string | null>(null)
+const removeGiftId = ref<string | null>(null)
+const removeGiftTitle = ref('')
 
 const giftsStore = useGiftStore()
 const { gifts, isLoadingGifts } = storeToRefs(giftsStore)
@@ -21,6 +24,30 @@ const editingGift = computed(() => gifts.value.find(g => g.id === editGiftId.val
 const formatGiftDate = (date?: string) => {
   if (!date || date.length === 0) return ''
   return dayjs(date).format('DD.MM.YYYY')
+}
+
+const peopleStore = usePeopleStore()
+const { people, isLoadingPeople } = storeToRefs(peopleStore)
+
+const holidayStore = useHolidayStore()
+const { holidays } = storeToRefs(holidayStore)
+
+const search = ref(null)
+
+const selectedHolidayId = ref<string | null>(null)
+const isShowedGiven = ref(false)
+
+const handleRemoveGift = (id: Gift['id']) => {
+  removeGiftId.value = id
+  const gift = gifts.value.find(g => g.id === id)
+  removeGiftTitle.value = gift?.title ?? ''
+}
+
+const confirmRemoveGift = () => {
+  if (removeGiftId.value) {
+    giftsStore.removeGift(removeGiftId.value)
+    removeGiftId.value = null
+  }
 }
 
 const giftFilter = computed(() => createGiftFilter(people.value))
@@ -51,6 +78,13 @@ const createGiftFilter = (peopleList: People[]) => {
       }
     }
 
+    if (gift.holidayId) {
+      const holiday = holidays.value.find(h => h.id === gift.holidayId)
+      if (holiday && holiday.title.toLowerCase().includes(searchLower)) {
+        return true
+      }
+    }
+
     return false
   }
 }
@@ -71,6 +105,10 @@ const getCurrentFilters = (): QueryConstraint[] => {
     ]
   }
 
+  if (selectedHolidayId.value) {
+    internalFilters.push(where('holidayId', '==', selectedHolidayId.value))
+  }
+
   return [...parentFilters, ...internalFilters]
 }
 const updateGiftsList = () => {
@@ -82,25 +120,24 @@ const totalPriceApproved = computed(() => gifts.value
     .filter(item => item.status !== GiftStatus.Idea)
     .reduce((total, item) => total + (item['price'] as number), 0))
 
-const peopleStore = usePeopleStore()
-const { people, isLoadingPeople } = storeToRefs(peopleStore)
-
-const search = ref(null)
-
-
-const isShowedGiven = ref(false)
 watch(isShowedGiven, () => {
+  updateGiftsList()
+})
+
+watch(selectedHolidayId, () => {
   updateGiftsList()
 })
 
 onMounted(() => {
   updateGiftsList()
   peopleStore.getPeopleList()
+  holidayStore.getHolidaysList()
 })
 
 onUnmounted(() => {
   giftsStore.stopFetchingGifts()
   peopleStore.stopGetPeopleList()
+  holidayStore.stopFetchingHolidays()
 })
 </script>
 
@@ -147,6 +184,17 @@ onUnmounted(() => {
               variant="outlined"
             />
 
+            <v-select
+              v-model="selectedHolidayId"
+              :items="[{ title: 'Все праздники', value: null }, ...holidays.map(h => ({ title: h.title, value: h.id }))]"
+              clearable
+              density="compact"
+              hide-details
+              label="Фильтр по празднику"
+              style="max-width: 250px; min-width: 200px; width: 100%;"
+              variant="outlined"
+            />
+
             <v-switch
               v-model="isShowedGiven"
               density="compact"
@@ -177,18 +225,18 @@ onUnmounted(() => {
             icon="mdi-trash-can-outline"
             size="small"
             variant="text"
-            @click="() => { giftsStore.removeGift((item as Gift).id) }"
+            @click="handleRemoveGift((item as Gift).id)"
           />
         </v-btn-group>
       </template>
 
       <template #cell-personId="{ item }">
-        {{ people.find((hero) => hero?.id === item?.personId)?.name }}
+        {{ people.find((hero) => hero?.id === (item as Gift)?.personId)?.name }}
       </template>
 
       <template #cell-datePickup="{ item }">
         <div
-          v-if="item?.link"
+          v-if="(item as Gift)?.link"
           class="d-flex ga-2 align-center"
         >
           {{ formatGiftDate((item as Gift).datePickup) }}
@@ -196,7 +244,7 @@ onUnmounted(() => {
           <v-btn
             :color="getMarketplaceFromUrl((item as Gift).link || '').color"
 
-            :href="item.link as string"
+            :href="(item as Gift).link as string"
             :icon="getMarketplaceFromUrl((item as Gift).link || '').icon"
             size="small"
             target="_blank"
@@ -220,9 +268,13 @@ onUnmounted(() => {
               GiftStatus.AtHome,
               GiftStatus.Wrapped
             ].includes((item as Gift).status)"
-            :icon="people.find((hero) => hero?.id === item?.personId)?.icon"
+            :icon="people.find((hero) => hero?.id === (item as Gift)?.personId)?.icon"
           />
         </div>
+      </template>
+
+      <template #cell-holidayId="{ item }">
+        {{ holidays.find(h => h.id === (item as Gift).holidayId)?.title }}
       </template>
 
       <template #no-data>
@@ -249,6 +301,14 @@ onUnmounted(() => {
       :gift="editingGift"
       :model-value="editGiftId !== null"
       @update:model-value="(v) => { if (!v) editGiftId = null }"
+    />
+
+    <ConfirmDialog
+      :message="'Вы уверены, что хотите удалить подарок «' + removeGiftTitle + '»?'"
+      :model-value="removeGiftId !== null"
+      title="Удаление подарка"
+      @confirm="confirmRemoveGift"
+      @update:model-value="removeGiftId = null"
     />
   </div>
 </template>

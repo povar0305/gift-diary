@@ -1,6 +1,8 @@
 <script lang="ts" setup>
 import type { PeopleCardProps } from "./types";
-import { type People, RelationPeopleLabels, usePeopleStore } from "@/entities/people";
+import { RelationPeopleLabels, usePeopleStore } from "@/entities/people";
+import { ConfirmDialog } from "@/shared";
+import { ref } from "vue";
 
 const { person, variant = 'table' } = defineProps<PeopleCardProps>()
 
@@ -10,9 +12,22 @@ const emit = defineEmits<{
   (e: 'delete:people'): void
 }>()
 
-const handleDeletePeople = (id: People['id']) => {
-  peopleStore.removePeople(id)
-  emit('delete:people')
+
+const handleDeletePeople = () => {
+  removePersonId.value = person.id
+  removePersonName.value = person.name
+
+}
+
+const removePersonId = ref<string | null>(null)
+const removePersonName = ref('')
+
+const confirmRemovePerson = () => {
+  if (removePersonId.value) {
+    peopleStore.removePeople(removePersonId.value)
+    removePersonId.value = null
+    emit('delete:people')
+  }
 }
 </script>
 
@@ -61,9 +76,17 @@ const handleDeletePeople = (id: People['id']) => {
           density="compact"
           icon="mdi-trash-can-outline"
           variant="text"
-          @click.prevent.stop="handleDeletePeople(person.id)"
+          @click.prevent.stop="handleDeletePeople"
         />
       </div>
     </v-card>
+
+    <ConfirmDialog
+      :message="'Вы уверены, что хотите удалить «' + removePersonName + '»? Все подарки этого человека останутся без получателя.'"
+      :model-value="removePersonId !== null"
+      title="Удаление человека"
+      @confirm="confirmRemovePerson"
+      @update:model-value="removePersonId = null"
+    />
   </div>
 </template>

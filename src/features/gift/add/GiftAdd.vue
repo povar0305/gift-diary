@@ -4,6 +4,7 @@ import { DynamicForm, Title } from '@/shared'
 import { type Gift, type GiftCreateFormData, GiftCreateSchema, useGiftStore } from "@/entities/gift";
 import { getFieldsGiftCreate, GitsCreateInitialValues } from "./constants";
 import { usePeopleStore } from "@/entities/people";
+import { useHolidayStore } from "@/entities/holiday";
 import { storeToRefs } from "pinia";
 import { onMounted, onUnmounted } from "vue";
 
@@ -27,19 +28,25 @@ const initialValues = computed(() => props.gift
       status: props.gift.status,
       price: props.gift.price,
       link: props.gift.link,
-      datePickup: props.gift.datePickup
+      datePickup: props.gift.datePickup,
+      holidayId: props.gift.holidayId,
     }
   : GitsCreateInitialValues)
 
 const peopleStore = usePeopleStore()
 const { people } = storeToRefs(peopleStore)
 
+const holidayStore = useHolidayStore()
+const { holidays } = storeToRefs(holidayStore)
+
 onMounted(() => {
   peopleStore.getPeopleList()
+  holidayStore.getHolidaysList()
 })
 
 onUnmounted(() => {
   peopleStore.stopGetPeopleList()
+  holidayStore.stopFetchingHolidays()
 })
 
 const close = () => emit('update:modelValue', false)
@@ -75,7 +82,7 @@ const onSubmit = (data: GiftCreateFormData) => {
       </div>
 
       <DynamicForm
-        :fields="getFieldsGiftCreate(people)"
+        :fields="getFieldsGiftCreate(people, holidays)"
         :initial-values="initialValues"
         :schema="GiftCreateSchema"
         :submit-label="isEdit ? 'Сохранить' : 'Создать'"
