@@ -6,6 +6,7 @@ import GiftsPage from "@/pages/gifts/GiftsPage.vue";
 import HumanPage from "@/pages/people/[id]/HumanPage.vue";
 import HolidaysPage from "@/pages/holidays/HolidaysPage.vue";
 import HolidayPage from "@/pages/holiday/[id]/HolidayPage.vue";
+import HomeReadyPage from "@/pages/ready/HomeReadyPage.vue";
 
 const routes = [
   {
@@ -61,6 +62,16 @@ const routes = [
     path: '/holidays/:id',
     name: 'current.holiday',
     component: HolidayPage,
+  },
+  {
+    path: '/ready',
+    name: 'ready',
+    component: HomeReadyPage,
+    meta: {
+      title: 'Нужно упаковать',
+      icon: 'mdi-check-circle-outline',
+      showInNav: true,
+    },
   }
 ]
 
