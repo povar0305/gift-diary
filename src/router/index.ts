@@ -68,7 +68,7 @@ const routes = [
     name: 'ready',
     component: HomeReadyPage,
     meta: {
-      title: 'Готовые к вручению',
+      title: 'Нужно упаковать',
       icon: 'mdi-check-circle-outline',
       showInNav: true,
     },

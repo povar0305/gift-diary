@@ -58,18 +58,18 @@ const readyGifts = computed<ReadyGift[]>(() => {
   }
 
   return [...giftsByPerson.values()]
-    .filter(personGifts => personGifts.every(g => g.status === GiftStatus.AtHome))
-    .flat()
-    .map(gift => {
-      const person = people.value.find(p => p.id === gift.personId);
+      .filter(personGifts => personGifts.every(g => g.status === GiftStatus.AtHome))
+      .flat()
+      .map(gift => {
+        const person = people.value.find(p => p.id === gift.personId);
 
-      return {
-        ...gift,
-        personName: person?.name ?? '',
-        personIcon: person?.icon,
-        statusLabel: GiftStatusLabels[gift.status],
-      };
-    });
+        return {
+          ...gift,
+          personName: person?.name ?? '',
+          personIcon: person?.icon,
+          statusLabel: GiftStatusLabels[gift.status],
+        };
+      });
 });
 
 onMounted(() => {
@@ -100,7 +100,7 @@ onUnmounted(() => {
             class="d-flex ga-2 align-center w-100"
           >
             <Title>
-              Готовые к вручению
+              Нужно упаковать
             </Title>
 
             <Text>
